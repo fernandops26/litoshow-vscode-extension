@@ -1,0 +1,177 @@
+{
+  "name": "litoshow",
+  "displayName": "litoshow",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.67.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:newlitoshow.testStatus",
+    "onCommand:newlitoshow.createMacro",
+    "onCommand:newlitoshow.saveMacro",
+    "onCommand:newlitoshow.refreshMacro",
+    "onCommand:newlitoshow.playMacro",
+    "onCommand:newlitoshow.removeMacro",
+    "onCommand:newlitoshow.viewPlayer",
+    "onView:litoshow-sidebar",
+    "onView:litoshow-tree"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "litoshow-sidebar-view",
+          "title": "Lito Show",
+          "icon": "media/replay.svg"
+        },
+        {
+          "id": "litoshow-step-tree",
+          "title": "Lito Show: Step tree",
+          "icon": "media/replay.svg"
+        }
+      ]
+    },
+    "views": {
+      "litoshow-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "litoshow-sidebar",
+          "name": "Litoshow",
+          "icon": "media/replay.svg",
+          "contextualTitle": "Litoshow"
+        }
+      ],
+      "litoshow-step-tree": [
+        {
+          "id": "litoshow-tree",
+          "name": "(Litoshow Tree)",
+          "icon": "media/replay.svg"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "newlitoshow.refreshMacro",
+          "when": "view == litoshow-tree",
+          "group": "navigation"
+        },
+        {
+          "command": "newlitoshow.refreshAll",
+          "when": "view == litoshow-sidebar",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "newlitoshow.playMacro",
+          "group": "inline",
+          "when": "view == litoshow-tree"
+        },
+        {
+          "command": "newlitoshow.removeMacro",
+          "group": "inline",
+          "when": "view == litoshow-tree"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "newlitoshow.refreshWebviews",
+        "category": "Litoshow",
+        "title": "Refresh Webviews"
+      },
+      {
+        "command": "newlitoshow.createMacro",
+        "category": "Litoshow",
+        "title": "Create Macro"
+      },
+      {
+        "command": "newlitoshow.saveMacro",
+        "category": "Litoshow",
+        "title": "Save Macro"
+      },
+      {
+        "command": "newlitoshow.removeMacro",
+        "category": "Litoshow",
+        "title": "Remove Macro",
+        "icon": "media/trash.svg"
+      },
+      {
+        "command": "newlitoshow.refreshMacro",
+        "category": "Litoshow",
+        "title": "Refresh",
+        "icon": "media/refresh.svg"
+      },
+      {
+        "command": "newlitoshow.playMacro",
+        "category": "Litoshow",
+        "title": "Play",
+        "icon": "media/play.svg"
+      },
+      {
+        "command": "newlitoshow.refreshAll",
+        "category": "Litoshow",
+        "title": "Refresh"
+      },
+      {
+        "command": "newlitoshow.viewPlayer",
+        "category": "Litoshow",
+        "title": "View Player"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "vite:build": "vite build --watch"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.2",
+    "@types/react-dom": "^17.0.11",
+    "@types/vscode": "^1.67.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "14.x",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "eslint": "^8.14.0",
+    "glob": "^8.0.1",
+    "mocha": "^9.2.2",
+    "typescript": "^4.6.4",
+    "ts-loader": "^9.2.8",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "@vscode/test-electron": "^2.1.3",
+    "vite": "2.9.9",
+    "@vitejs/plugin-react": "1.3.2",
+    "@rollup/plugin-alias": "3.1.9",
+    "@types/uuid": "8.3.4",
+    "postcss": "8.4.14",
+    "autoprefixer": "10.4.7"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "module-alias": "^2.2.2",
+    "uuid": "8.3.2",
+    "rc-slider": "10.0.0",
+    "tailwindcss": "3.0.24"
+  },
+  "_moduleAliases": {
+    "@componentes": "out",
+    "@pages": "out"
+  }
+}

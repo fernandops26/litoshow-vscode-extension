@@ -1,0 +1,14 @@
+{
+  "include": ["./**/*"],
+  "exclude": ["../node_modules/*"],
+  "compilerOptions": {
+    "module": "commonJS",
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@components/*": ["components/*"],
+      "@pages/*": ["pages/*"]
+    }
+  }
+}
