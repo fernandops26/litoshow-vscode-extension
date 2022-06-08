@@ -5,7 +5,6 @@ import { Macro } from '../types';
 import { EditorProvider } from '../providers/EditorProvider';
 import { StorageService } from '../providers/StorageService';
 import { TreeDataProvider } from './TreeDataProvider';
-import { MacroPlayer } from './MacroPlayer';
 
 export class MacroRecorder {
   private _macroRepository: MacroRepository;
@@ -55,12 +54,17 @@ export class MacroRecorder {
 
         const currentContent = this._textEditorManager.currentContent();
 
+        if (!currentContent) {
+          return;
+        }
+        console.log('current content: ', currentContent);
+
         const macro: Macro = {
           id: uuidv4(),
           name: macroName,
           initialState: {
-            range: currentContent[0],
-            text: currentContent[1],
+            range: currentContent.range,
+            text: currentContent.text,
           },
           changes: [],
         };
@@ -135,7 +139,7 @@ export class MacroRecorder {
     if (null === this._activeMacro) {
       return;
     }
-    console.log(e.contentChanges);
+    console.log(e);
 
     this._activeMacro.changes?.push({
       document: e.document,
@@ -146,15 +150,14 @@ export class MacroRecorder {
 
   public static register(
     context: vscode.ExtensionContext,
+    macroRepository: MacroRepository,
     treeProvider: TreeDataProvider
   ) {
     vscode.window.showInformationMessage('register recorder');
 
-    const storage = new StorageService(context.globalState);
-    const macroRepository = new MacroRepository(storage);
-    const stepRecorder = new MacroRecorder(macroRepository, treeProvider);
+    const macroRecorder = new MacroRecorder(macroRepository, treeProvider);
 
-    context.subscriptions.push(stepRecorder);
+    context.subscriptions.push(macroRecorder);
   }
 
   private createStatus() {

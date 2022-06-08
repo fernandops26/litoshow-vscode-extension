@@ -17,23 +17,22 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   //private _textEditorManager: EditorProvider;
 
   private _onDidChangeTreeData: vscode.EventEmitter<
-    TreeItem | undefined | void
+    TreeItem | undefined | null | void
   > = new vscode.EventEmitter<TreeItem | undefined | void>();
 
-  readonly onDidChangeTreeData?: vscode.Event<
-    void | TreeItem | TreeItem[] | undefined
+  readonly onDidChangeTreeData: vscode.Event<
+    TreeItem | undefined | null | void
   > = this._onDidChangeTreeData.event;
 
   constructor(
     repository: MacroRepository,
     macroManager: MacroPlayerManager,
-    macroList: Macro[],
     extensionUri: vscode.Uri
   ) {
     this._repository = repository;
     this._macroManager = macroManager;
-    this._data = macroList;
     this._extensionUri = extensionUri;
+    this.loadData();
     //this._textEditorManager = textEditorManager;
 
     let suscriptions: vscode.Disposable[] = [];
@@ -97,6 +96,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   getChildren(element?: TreeItem): vscode.ProviderResult<TreeItem[]> {
     //const macros: Macro[] = this._repository.findAll();
 
+    console.log('get children: ', element);
     if (element == undefined) {
       return this._toTreeItemList(this._data);
     }
@@ -106,20 +106,16 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
   public static register(
     context: vscode.ExtensionContext,
+    macroRepository: MacroRepository,
     macroManager: MacroPlayerManager
   ) {
-    const storage = new StorageService(context.globalState);
-    const macroRepository = new MacroRepository(storage);
-    const macros: Macro[] = macroRepository.findAll();
-
-    const dataProvider = new TreeDataProvider(
+    const treeProvider = new TreeDataProvider(
       macroRepository,
       macroManager,
-      macros,
       context.extensionUri
     );
 
-    return dataProvider;
+    return treeProvider;
   }
 
   private _toTreeItemList(macros: Macro[]) {
@@ -146,7 +142,13 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   }
 
   refresh(): void {
+    console.log('refresh...');
+    this.loadData();
     this._onDidChangeTreeData.fire();
+  }
+
+  private loadData(): void {
+    this._data = this._repository.findAll();
   }
 }
 

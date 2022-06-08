@@ -32,7 +32,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.extensionUri
   );
 
-  const treeProvider = TreeDataProvider.register(context, macroManager);
+  const treeProvider = TreeDataProvider.register(
+    context,
+    macroRepository,
+    macroManager
+  );
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider('litoshow-tree', treeProvider)
@@ -44,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );*/
 
-  MacroRecorder.register(context, treeProvider);
+  MacroRecorder.register(context, macroRepository, treeProvider);
 
   /*const sidebarProvider = new SidebarProvider(context.extensionUri);
   context.subscriptions.push(

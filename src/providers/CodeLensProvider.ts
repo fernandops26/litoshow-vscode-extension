@@ -19,7 +19,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     document: vscode.TextDocument,
     token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.CodeLens[]> {
-    const codeLens: Array<Step> = this._storage.getValue('steps') ?? [];
+    /*const codeLens: Array<Step> = this._storage.getValue('steps') ?? [];
 
     return codeLens.map((codeLen: Step, index) => {
       const codeLensItem = new vscode.CodeLens(codeLen.range);
@@ -30,6 +30,8 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       };
 
       return codeLensItem;
-    });
+    });*/
+
+    return;
   }
 }

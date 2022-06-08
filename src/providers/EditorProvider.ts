@@ -7,20 +7,36 @@ export class EditorProvider {
     this._editor = vscode.window.visibleTextEditors[0];
   }
 
-  public currentContent() {
+  public currentContent(): { range: vscode.Range; text: string } | null {
     if (!this.isActiveEditor()) {
-      return '';
+      return null;
     }
 
-    const text = this._editor?.document.getText() || '';
-    const lines = text.split('\n');
+    const doc = this._editor?.document;
+
+    if (!doc) {
+      return null;
+    }
+
+    const numLines = doc.lineCount;
+    console.log('num lines: ', numLines);
+
+    const startLine = doc.lineAt(0);
+    const endLine = doc.lineAt(numLines - 1);
+    console.log('startLine: ', startLine);
+    console.log('endLine: ', endLine);
 
     const range = new vscode.Range(
-      new vscode.Position(0, 0),
-      new vscode.Position(lines?.length - 1, lines[lines?.length - 1].length)
+      new vscode.Position(
+        startLine.lineNumber,
+        startLine.range.start.character
+      ),
+      new vscode.Position(endLine.lineNumber, endLine.range.end.character)
     );
 
-    return [range, text];
+    const text = this._editor?.document.getText(range) ?? '';
+
+    return { range, text };
   }
 
   public selectedText() {
