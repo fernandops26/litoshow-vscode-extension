@@ -85,6 +85,8 @@ export class MacroPlayer implements Subject {
       );
     }
 
+    MacroPlayer.instance._macro = macro;
+
     return MacroPlayer.instance;
   }
 
@@ -137,7 +139,7 @@ export class MacroPlayer implements Subject {
           self._status = self.STOPPED;
           self.notify('status-changed');
         }
-      }, 100);
+      }, 50);
     })(this._position);
   }
 
@@ -157,15 +159,15 @@ export class MacroPlayer implements Subject {
     }
 
     const selectedChange = changes[position].contentChanges[0];
-    const vsCodePosition = new vscode.Position(
+
+    const vsCodeRange = new vscode.Range(
       selectedChange.range[0].line,
-      selectedChange.range[0].character
+      selectedChange.range[0].character,
+      selectedChange.range[1].line,
+      selectedChange.range[1].character
     );
 
-    await this._textEditorManager.insertContent(
-      vsCodePosition,
-      selectedChange.text
-    );
+    await this._textEditorManager.setContent(vsCodeRange, selectedChange.text);
   }
 
   public previous() {}

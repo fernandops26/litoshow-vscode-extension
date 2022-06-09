@@ -51,7 +51,7 @@ export default function MacroView() {
   return (
     <div>
       <div className='flex justify-center flex-wrap'>
-        <h1 className='text-white text-xl'>Macro Player Viever</h1>
+        <h1 className='text-white text-xl'>Macro Player</h1>
       </div>
       <div className='p-8 bg-white rounded shadow m-5'>
         <Slider min={0} max={100} value={percent} onChange={onChange} />
