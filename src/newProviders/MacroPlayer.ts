@@ -158,16 +158,16 @@ export class MacroPlayer implements Subject {
       return;
     }
 
-    const selectedChange = changes[position].contentChanges[0];
+    for (let change of contentChanges) {
+      const vsCodeRange = new vscode.Range(
+        change.range.start.line,
+        change.range.start.character,
+        change.range.end.line,
+        change.range.end.character
+      );
 
-    const vsCodeRange = new vscode.Range(
-      selectedChange.range.start.line,
-      selectedChange.range.start.character,
-      selectedChange.range.end.line,
-      selectedChange.range.end.character
-    );
-
-    await this._textEditorManager.setContent(vsCodeRange, selectedChange.text);
+      await this._textEditorManager.setContent(vsCodeRange, change.text);
+    }
   }
 
   public previous() {}
