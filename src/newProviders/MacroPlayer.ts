@@ -95,17 +95,17 @@ export class MacroPlayer implements Subject {
       return;
     }
 
-    const state = this._macro.initialState;
+    const { content } = this._macro.initialState;
     const newRange = new vscode.Range(
-      new vscode.Position(state.range[0].line, state.range[0].character),
-      new vscode.Position(state.range[1].line, state.range[1].character)
+      new vscode.Position(
+        content.range.start.line,
+        content.range.start.character
+      ),
+      new vscode.Position(content.range.end.line, content.range.end.character)
     );
 
     await this._textEditorManager.clear();
-    await this._textEditorManager.setContent(
-      newRange,
-      this._macro.initialState.text
-    );
+    await this._textEditorManager.setContent(newRange, content.text);
 
     this._position = 0;
     this._status = this.PLAYING;
@@ -144,7 +144,7 @@ export class MacroPlayer implements Subject {
   }
 
   public async next(position: number): Promise<any> {
-    const changes = this._macro.changes || [];
+    const changes = this._macro.changes;
 
     if (position > changes.length - 1) {
       return;
@@ -161,10 +161,10 @@ export class MacroPlayer implements Subject {
     const selectedChange = changes[position].contentChanges[0];
 
     const vsCodeRange = new vscode.Range(
-      selectedChange.range[0].line,
-      selectedChange.range[0].character,
-      selectedChange.range[1].line,
-      selectedChange.range[1].character
+      selectedChange.range.start.line,
+      selectedChange.range.start.character,
+      selectedChange.range.end.line,
+      selectedChange.range.end.character
     );
 
     await this._textEditorManager.setContent(vsCodeRange, selectedChange.text);

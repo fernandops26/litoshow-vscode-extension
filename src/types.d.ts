@@ -8,9 +8,57 @@ export interface Step {
 
 export interface Macro {
   id: string;
-  initialState: any;
+  initialState: InititalMacroState;
   name: string;
-  changes?: any[];
+  changes: MacroChangeEvent[];
+}
+
+export interface InititalMacroState {
+  readonly document: MacroChangeDocument;
+  readonly content: MacroDocumentContentChange;
+}
+
+export interface MacroChangeEvent {
+  readonly document: MacroChangeDocument;
+  readonly contentChanges: readonly MacroDocumentContentChange[];
+  readonly reason?: number;
+}
+
+export interface DocumentChangeRange {
+  start: DocumentChangePositition;
+  end: DocumentChangePositition;
+}
+
+export interface DocumentChangePositition {
+  line: number;
+  character: number;
+}
+
+export interface MacroDocumentContentChange {
+  range: DocumentChangeRange;
+  rangeOffset?: number;
+  rangeLength?: number;
+  text: string;
+}
+
+export interface MacroChangeDocumentUri {
+  $mid: number;
+  fsPath: string;
+  external: string;
+  path: string;
+  scheme: string;
+}
+
+export interface MacroChangeDocument {
+  uri: MacroChangeDocumentUri;
+  fileName: string;
+  isUntitled: boolean;
+  languageId: string;
+  version: number;
+  isClosed: boolean;
+  isDirty: boolean;
+  eol: number;
+  lineCount: number;
 }
 
 export type StatusUpdate = {

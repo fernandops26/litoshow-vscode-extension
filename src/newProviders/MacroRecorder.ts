@@ -3,8 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import MacroRepository from '../repositories/MacroRepository';
 import { Macro } from '../types';
 import { EditorProvider } from '../providers/EditorProvider';
-import { StorageService } from '../providers/StorageService';
 import { TreeDataProvider } from './TreeDataProvider';
+import {
+  toInititalMacroState,
+  toMacroChangeEvent,
+} from '../utils/toMacroChangeEvent';
 
 export class MacroRecorder {
   private _macroRepository: MacroRepository;
@@ -53,19 +56,22 @@ export class MacroRecorder {
         }
 
         const currentContent = this._textEditorManager.currentContent();
+        const currentDocument = this._textEditorManager.currentDocument();
 
-        if (!currentContent) {
+        if (!currentContent || !currentDocument) {
           return;
         }
+
         console.log('current content: ', currentContent);
 
         const macro: Macro = {
           id: uuidv4(),
           name: macroName,
-          initialState: {
-            range: currentContent.range,
-            text: currentContent.text,
-          },
+          initialState: toInititalMacroState(
+            currentDocument,
+            currentContent.range,
+            currentContent.text
+          ),
           changes: [],
         };
 
@@ -89,30 +95,6 @@ export class MacroRecorder {
       }
     );
 
-    /*const playMacro = vscode.commands.registerCommand(
-      'newlitoshow.playMacro',
-      async (command) => {
-        console.log(command);
-        vscode.window.showInformationMessage('play macro id : ' + command.id);
-
-        const macroToPlay = this._macroRepository.findOne(command.id);
-
-        if (!macroToPlay) {
-          vscode.window.showWarningMessage('Macro does not found!');
-          return null;
-        }
-
-        const player = MacroPlayer.getInstance(
-          this._macroRepository,
-          this._textEditorManager,
-          macroToPlay
-        );
-
-        await player.play();
-        //const document = this._textEditorManager
-      }
-    );*/
-
     this.createStatus();
 
     this._disposable = vscode.Disposable.from(
@@ -123,29 +105,12 @@ export class MacroRecorder {
     );
   }
 
-  /*private appendStep(newStep: {
-    range: vscode.Range;
-    text: string;
-    id: string;
-  }) {
-    const currentSteps = Array.from(this._storage.getValue('steps') || []);
-
-    currentSteps.push(newStep);
-
-    this._storage.setValue('steps', currentSteps);
-  }*/
-
   private _onDidChangeTextDocument(e: vscode.TextDocumentChangeEvent): void {
     if (null === this._activeMacro) {
       return;
     }
-    console.log(e);
 
-    this._activeMacro.changes?.push({
-      document: e.document,
-      contentChanges: e.contentChanges,
-      reason: e.reason,
-    });
+    this._activeMacro.changes.push(toMacroChangeEvent(e));
   }
 
   public static register(

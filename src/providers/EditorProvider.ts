@@ -1,10 +1,15 @@
 import * as vscode from 'vscode';
+import { MacroChangeDocument, MacroDocumentContentChange } from '../types';
 
 export class EditorProvider {
   private _editor: vscode.TextEditor | undefined;
 
   constructor() {
     this._editor = vscode.window.visibleTextEditors[0];
+  }
+
+  public currentDocument(): vscode.TextDocument | undefined {
+    return this._editor?.document;
   }
 
   public currentContent(): { range: vscode.Range; text: string } | null {

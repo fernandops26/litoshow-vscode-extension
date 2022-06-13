@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { CodelensProvider } from './providers/CodeLensProvider';
 import { HelloWorldPanel } from './HelloWorldPanel';
 import { HighlightProvider } from './HighlightProvider';
 import { MacroRecorder } from './newProviders/MacroRecorder';
@@ -14,14 +13,6 @@ import MacroRepository from './repositories/MacroRepository';
 import { EditorProvider } from './providers/EditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
-  /*context.subscriptions.push(
-    vscode.commands.registerCommand('newlitoshow.checkSelection', () => {
-      const activeText = vscode.window.activeTextEditor;
-
-      console.log(activeText?.selection);
-    })
-  );*/
-
   const storage = new StorageService(context.globalState);
   const macroRepository = new MacroRepository(storage);
   const editorProvider = new EditorProvider();
@@ -155,13 +146,6 @@ export function activate(context: vscode.ExtensionContext) {
 //       500
 //     );
 //   })
-// );
-
-// context.subscriptions.push(
-//   vscode.languages.registerCodeLensProvider(
-//     '*',
-//     new CodelensProvider(context)
-//   )
 // );
 
 // context.subscriptions.push(
