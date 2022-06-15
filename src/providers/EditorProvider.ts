@@ -1,11 +1,22 @@
 import * as vscode from 'vscode';
-import { MacroChangeDocument, MacroDocumentContentChange } from '../types';
+import {
+  MacroChangeDocument,
+  MacroDocumentContentChange,
+  MacroDocumentState,
+} from '../types';
 
 export class EditorProvider {
   private _editor: vscode.TextEditor | undefined;
 
   constructor() {
     this._editor = vscode.window.visibleTextEditors[0];
+  }
+
+  public getState() {
+    return {
+      document: this.currentDocument(),
+      content: this.currentContent(),
+    };
   }
 
   public currentDocument(): vscode.TextDocument | undefined {

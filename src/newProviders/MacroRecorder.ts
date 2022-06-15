@@ -5,7 +5,7 @@ import { Macro } from '../types';
 import { EditorProvider } from '../providers/EditorProvider';
 import { TreeDataProvider } from './TreeDataProvider';
 import {
-  toInititalMacroState,
+  toInitialMacroChange,
   toMacroChangeEvent,
 } from '../utils/toMacroChangeEvent';
 
@@ -55,24 +55,37 @@ export class MacroRecorder {
           return;
         }
 
-        const currentContent = this._textEditorManager.currentContent();
-        const currentDocument = this._textEditorManager.currentDocument();
+        const currentState = this._textEditorManager.getState();
 
-        if (!currentContent || !currentDocument) {
+        //const currentContent = this._textEditorManager.currentContent();
+        //const currentDocument = this._textEditorManager.currentDocument();
+
+        if (!currentState.document || !currentState.content) {
           return;
         }
 
-        console.log('current content: ', currentContent);
+        //console.log('current content: ', currentContent);
+        // { context: 'a', changes: '' }, -> on move: pos: 0 (context + changes) | on play: (changes)
+        // { context: 'a', changes: 'b' }, -> a pos: 1 (context + changes) | on play: (changes)
+        // { context: 'ab', changes: 'c' } -> a pos: 2 (context + changes) | on play: (changes)
+        // { context: 'abc', changes: 'd' } -> a pos: 3 (context + changes) | on play: (changes)
+        // { context: 'abcd', changes: 'e' } -> a pos: 4 (context + changes) | on play: (changes)
 
         const macro: Macro = {
           id: uuidv4(),
           name: macroName,
-          initialState: toInititalMacroState(
+          /*initialState: toInititalMacroState(
             currentDocument,
             currentContent.range,
             currentContent.text
-          ),
-          changes: [],
+          ),*/
+          changes: [
+            toInitialMacroChange(
+              currentState.document,
+              currentState.content.range,
+              currentState.content.text
+            ),
+          ],
         };
 
         this._activeMacro = macro;
@@ -109,7 +122,13 @@ export class MacroRecorder {
       return;
     }
 
-    this._activeMacro.changes.push(toMacroChangeEvent(e));
+    const content = this._textEditorManager.currentContent();
+
+    if (!content) {
+      return;
+    }
+
+    this._activeMacro.changes.push(toMacroChangeEvent(content, e));
   }
 
   public static register(

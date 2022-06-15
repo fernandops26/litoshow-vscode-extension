@@ -68,17 +68,14 @@ export class MacroPlayer {
       return;
     }
 
-    const { content } = this._macro.initialState;
+    const { state } = this._macro.changes[0];
     const newRange = new vscode.Range(
-      new vscode.Position(
-        content.range.start.line,
-        content.range.start.character
-      ),
-      new vscode.Position(content.range.end.line, content.range.end.character)
+      new vscode.Position(state.range.start.line, state.range.start.character),
+      new vscode.Position(state.range.end.line, state.range.end.character)
     );
 
     await this._textEditorManager.clear();
-    await this._textEditorManager.setContent(newRange, content.text);
+    await this._textEditorManager.setContent(newRange, state.text);
 
     this._position = 0;
     this._status = this.PLAYING;

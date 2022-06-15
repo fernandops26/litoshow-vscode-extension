@@ -8,9 +8,9 @@ export interface Step {
 
 export interface Macro {
   id: string;
-  initialState: InititalMacroState;
+  initialState?: InititalMacroState;
   name: string;
-  changes: MacroChangeEvent[];
+  changes: MacroChange[];
 }
 
 export interface InititalMacroState {
@@ -18,7 +18,10 @@ export interface InititalMacroState {
   readonly content: MacroDocumentContentChange;
 }
 
-export interface MacroChangeEvent {
+export interface MacroDocumentState extends MacroDocumentContentChange {}
+
+export interface MacroChange {
+  readonly state: MacroDocumentContentChange;
   readonly document: MacroChangeDocument;
   readonly contentChanges: readonly MacroDocumentContentChange[];
   readonly reason?: number;
