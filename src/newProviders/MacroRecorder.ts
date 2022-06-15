@@ -101,7 +101,6 @@ export class MacroRecorder {
       ...suscriptions,
       createMacro,
       saveMacro
-      // stepCreator
     );
   }
 

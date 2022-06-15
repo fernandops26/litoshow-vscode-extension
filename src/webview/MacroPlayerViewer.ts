@@ -1,3 +1,4 @@
+import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { getNonce } from '../getNonce';
 import { Observer, StatusUpdate } from '../types';
@@ -17,9 +18,13 @@ export class MacroPlayerViewer implements Observer {
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
+  private _eventEmitter: EventEmitter;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionUri: vscode.Uri) {
+  public static createOrShow(
+    extensionUri: vscode.Uri,
+    eventEmitter: EventEmitter
+  ) {
     const column = undefined; /*vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;*/
@@ -49,7 +54,11 @@ export class MacroPlayerViewer implements Observer {
       }
     );
 
-    MacroPlayerViewer.currentPanel = new MacroPlayerViewer(panel, extensionUri);
+    MacroPlayerViewer.currentPanel = new MacroPlayerViewer(
+      panel,
+      extensionUri,
+      eventEmitter
+    );
 
     return MacroPlayerViewer.currentPanel;
   }
@@ -59,13 +68,26 @@ export class MacroPlayerViewer implements Observer {
     MacroPlayerViewer.currentPanel = undefined;
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    MacroPlayerViewer.currentPanel = new MacroPlayerViewer(panel, extensionUri);
+  public static revive(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    eventEmitter: EventEmitter
+  ) {
+    MacroPlayerViewer.currentPanel = new MacroPlayerViewer(
+      panel,
+      extensionUri,
+      eventEmitter
+    );
   }
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    eventEmitter: EventEmitter
+  ) {
     this._panel = panel;
     this._extensionUri = extensionUri;
+    this._eventEmitter = eventEmitter;
     this._panel.webview.options = {
       enableScripts: true,
     };
@@ -76,6 +98,13 @@ export class MacroPlayerViewer implements Observer {
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    this._eventEmitter.on('status-changed', (status) => {
+      this._panel?.webview.postMessage({
+        type: 'update-status',
+        value: status,
+      });
+    });
 
     // // Handle messages from the webview
     // this._panel.webview.onDidReceiveMessage(
@@ -93,10 +122,10 @@ export class MacroPlayerViewer implements Observer {
 
   public update(status: StatusUpdate): void {
     //console.log('update received: ', status);
-    this._panel?.webview.postMessage({
+    /*this._panel?.webview.postMessage({
       type: 'update-status',
       value: status,
-    });
+    });*/
   }
 
   public dispose() {
@@ -118,7 +147,12 @@ export class MacroPlayerViewer implements Observer {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
     webview.onDidReceiveMessage(async (data) => {
+      console.log('data: ', data);
       switch (data.type) {
+        case 'move-position': {
+          console.log('value received: ', data.value);
+          break;
+        }
         case 'onInfo': {
           if (!data.value) {
             return;
@@ -176,7 +210,9 @@ export class MacroPlayerViewer implements Observer {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${stylesResetUri}" rel="stylesheet">
           <link href="${stylesMainUri}" rel="stylesheet">
-          <script nonce="${nonce}"></script>
+          <script nonce="${nonce}">
+            const tsvscode = acquireVsCodeApi();
+          </script>
         </head>
         <body></body>
         <script type="module" src="${scriptUri}" nonce="${nonce}"></script>

@@ -12,7 +12,11 @@ import { StorageService } from './providers/StorageService';
 import MacroRepository from './repositories/MacroRepository';
 import { EditorProvider } from './providers/EditorProvider';
 
+import { EventEmitter } from 'events';
+
 export function activate(context: vscode.ExtensionContext) {
+  const eventEmitter = new EventEmitter();
+
   const storage = new StorageService(context.globalState);
   const macroRepository = new MacroRepository(storage);
   const editorProvider = new EditorProvider();
@@ -20,7 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
   const macroManager = new MacroPlayerManager(
     macroRepository,
     editorProvider,
-    context.extensionUri
+    context.extensionUri,
+    eventEmitter
   );
 
   const treeProvider = TreeDataProvider.register(

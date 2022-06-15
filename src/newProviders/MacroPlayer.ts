@@ -1,3 +1,4 @@
+import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { EditorProvider } from '../providers/EditorProvider';
 import MacroRepository from '../repositories/MacroRepository';
@@ -7,14 +8,14 @@ type ObserverRegister = {
   [eventType: string]: Observer[];
 };
 
-export class MacroPlayer implements Subject {
+export class MacroPlayer {
   private static instance: MacroPlayer;
   private _status: string;
   private _macroRepository: MacroRepository;
   private _textEditorManager: EditorProvider;
   private _macro: Macro;
   private _position: number;
-  private _observers: ObserverRegister = {};
+  private _eventEmitter: EventEmitter;
 
   PLAYING: string = 'playing';
   STOPPED: string = 'stopped';
@@ -23,6 +24,7 @@ export class MacroPlayer implements Subject {
   constructor(
     macroRepository: MacroRepository,
     textEditorManager: EditorProvider,
+    eventEmitter: EventEmitter,
     macro: Macro
   ) {
     this._macroRepository = macroRepository;
@@ -30,57 +32,28 @@ export class MacroPlayer implements Subject {
     this._macro = macro;
     this._position = 0;
     this._status = this.STOPPED;
-  }
-
-  // who whan observe changes
-  attach(eventType: string, observer: Observer): void {
-    console.log('attached');
-    if (!this._observers[eventType]) {
-      this._observers[eventType] = [];
-    }
-
-    this._observers[eventType].push(observer);
-  }
-
-  detach(eventType: string, observer: Observer): void {
-    if (!this._observers[eventType]) {
-      return;
-    }
-
-    const observerIndex = this._observers[eventType].indexOf(observer);
-    if (observerIndex === -1) {
-      return console.log('Subject: Nonexistent observer.');
-    }
-
-    this._observers[eventType].splice(observerIndex, 1);
+    this._eventEmitter = eventEmitter;
   }
 
   notify(eventType: string): void {
-    console.log('nitify');
-    if (!this._observers[eventType]) {
-      console.log('no found event');
-      return;
-    }
-
-    for (let observer of this._observers[eventType]) {
-      console.log('updating');
-      observer.update({
-        status: this._status,
-        total: this._macro.changes?.length || 0,
-        current: this._position,
-      });
-    }
+    this._eventEmitter.emit(eventType, {
+      status: this._status,
+      total: this._macro.changes.length,
+      current: this._position,
+    });
   }
 
   public static getInstance(
     macroRepository: MacroRepository,
     textEditorManager: EditorProvider,
+    eventEmitter: EventEmitter,
     macro: Macro
   ) {
     if (!MacroPlayer.instance) {
       MacroPlayer.instance = new MacroPlayer(
         macroRepository,
         textEditorManager,
+        eventEmitter,
         macro
       );
     }
@@ -117,8 +90,13 @@ export class MacroPlayer implements Subject {
     this._status = this.PAUSED;
   }
 
+  private moveTo(position: number) {
+    this._status = this.PAUSED;
+    this._position = position;
+  }
+
   private run() {
-    const changes = this._macro.changes || [];
+    const changes = this._macro.changes;
 
     const self = this;
 
@@ -129,7 +107,6 @@ export class MacroPlayer implements Subject {
 
       setTimeout(async () => {
         // your code handling here
-        console.log(changes[i]);
         if (i <= changes.length - 1) {
           self.notify('status-changed');
           await self.next(i);
