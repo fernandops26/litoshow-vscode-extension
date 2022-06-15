@@ -1,8 +1,8 @@
 import { EventEmitter } from 'stream';
-import * as vscode from 'vscode';
 import { EditorProvider } from '../providers/EditorProvider';
 import MacroRepository from '../repositories/MacroRepository';
 import { Macro, Observer, Subject } from '../types';
+import toVSCode from '../utils/rangeParser';
 
 type ObserverRegister = {
   [eventType: string]: Observer[];
@@ -68,14 +68,11 @@ export class MacroPlayer {
       return;
     }
 
-    const { state } = this._macro.changes[0];
-    const newRange = new vscode.Range(
-      new vscode.Position(state.range.start.line, state.range.start.character),
-      new vscode.Position(state.range.end.line, state.range.end.character)
-    );
+    const { currentContent } = this._macro.changes[0];
+    const vscodeRange = toVSCode(currentContent.range);
 
     await this._textEditorManager.clear();
-    await this._textEditorManager.setContent(newRange, state.text);
+    await this._textEditorManager.setContent(vscodeRange, currentContent.text);
 
     this._position = 0;
     this._status = this.PLAYING;
@@ -133,12 +130,7 @@ export class MacroPlayer {
     }
 
     for (let change of contentChanges) {
-      const vsCodeRange = new vscode.Range(
-        change.range.start.line,
-        change.range.start.character,
-        change.range.end.line,
-        change.range.end.character
-      );
+      const vsCodeRange = toVSCode(change.range);
 
       await this._textEditorManager.setContent(vsCodeRange, change.text);
     }

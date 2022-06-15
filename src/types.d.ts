@@ -8,26 +8,20 @@ export interface Step {
 
 export interface Macro {
   id: string;
-  initialState?: InititalMacroState;
   name: string;
   changes: MacroChange[];
 }
 
-export interface InititalMacroState {
-  readonly document: MacroChangeDocument;
-  readonly content: MacroDocumentContentChange;
-}
-
-export interface MacroDocumentState extends MacroDocumentContentChange {}
+export interface MacroDocumentState extends MacroDocumentContent {}
 
 export interface MacroChange {
-  readonly state: MacroDocumentContentChange;
-  readonly document: MacroChangeDocument;
-  readonly contentChanges: readonly MacroDocumentContentChange[];
+  readonly currentContent: MacroDocumentContent;
+  readonly document: MacroDocumentInfo;
+  readonly contentChanges: readonly MacroDocumentContent[];
   readonly reason?: number;
 }
 
-export interface DocumentChangeRange {
+export interface DocumentContentRange {
   start: DocumentChangePositition;
   end: DocumentChangePositition;
 }
@@ -37,14 +31,14 @@ export interface DocumentChangePositition {
   character: number;
 }
 
-export interface MacroDocumentContentChange {
-  range: DocumentChangeRange;
+export interface MacroDocumentContent {
+  range: DocumentContentRange;
   rangeOffset?: number;
   rangeLength?: number;
   text: string;
 }
 
-export interface MacroChangeDocumentUri {
+export interface MacroDocumentUri {
   $mid: number;
   fsPath: string;
   external: string;
@@ -52,8 +46,8 @@ export interface MacroChangeDocumentUri {
   scheme: string;
 }
 
-export interface MacroChangeDocument {
-  uri: MacroChangeDocumentUri;
+export interface MacroDocumentInfo {
+  uri: MacroDocumentUri;
   fileName: string;
   isUntitled: boolean;
   languageId: string;

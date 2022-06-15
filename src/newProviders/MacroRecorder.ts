@@ -6,7 +6,7 @@ import { EditorProvider } from '../providers/EditorProvider';
 import { TreeDataProvider } from './TreeDataProvider';
 import {
   toInitialMacroChange,
-  toMacroChangeEvent,
+  toMacroDocumentChangeEvent,
 } from '../utils/toMacroChangeEvent';
 
 export class MacroRecorder {
@@ -57,9 +57,6 @@ export class MacroRecorder {
 
         const currentState = this._textEditorManager.getState();
 
-        //const currentContent = this._textEditorManager.currentContent();
-        //const currentDocument = this._textEditorManager.currentDocument();
-
         if (!currentState.document || !currentState.content) {
           return;
         }
@@ -74,11 +71,6 @@ export class MacroRecorder {
         const macro: Macro = {
           id: uuidv4(),
           name: macroName,
-          /*initialState: toInititalMacroState(
-            currentDocument,
-            currentContent.range,
-            currentContent.text
-          ),*/
           changes: [
             toInitialMacroChange(
               currentState.document,
@@ -89,8 +81,6 @@ export class MacroRecorder {
         };
 
         this._activeMacro = macro;
-
-        // active macro
       }
     );
 
@@ -128,7 +118,7 @@ export class MacroRecorder {
       return;
     }
 
-    this._activeMacro.changes.push(toMacroChangeEvent(content, e));
+    this._activeMacro.changes.push(toMacroDocumentChangeEvent(content, e));
   }
 
   public static register(

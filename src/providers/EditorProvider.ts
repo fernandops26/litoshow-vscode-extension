@@ -1,9 +1,4 @@
 import * as vscode from 'vscode';
-import {
-  MacroChangeDocument,
-  MacroDocumentContentChange,
-  MacroDocumentState,
-} from '../types';
 
 export class EditorProvider {
   private _editor: vscode.TextEditor | undefined;
@@ -24,33 +19,20 @@ export class EditorProvider {
   }
 
   public currentContent(): { range: vscode.Range; text: string } | null {
-    if (!this.isActiveEditor()) {
+    const editor = this._editor;
+
+    if (!editor) {
       return null;
     }
 
-    const doc = this._editor?.document;
+    const doc = editor.document;
 
-    if (!doc) {
-      return null;
-    }
+    const totalLines = doc.lineCount;
+    const firstLine = doc.lineAt(0);
+    const lastLine = doc.lineAt(totalLines - 1);
 
-    const numLines = doc.lineCount;
-    console.log('num lines: ', numLines);
-
-    const startLine = doc.lineAt(0);
-    const endLine = doc.lineAt(numLines - 1);
-    console.log('startLine: ', startLine);
-    console.log('endLine: ', endLine);
-
-    const range = new vscode.Range(
-      new vscode.Position(
-        startLine.lineNumber,
-        startLine.range.start.character
-      ),
-      new vscode.Position(endLine.lineNumber, endLine.range.end.character)
-    );
-
-    const text = this._editor?.document.getText(range) ?? '';
+    const range = new vscode.Range(firstLine.range.start, lastLine.range.end);
+    const text = doc.getText(range);
 
     return { range, text };
   }
@@ -99,21 +81,19 @@ export class EditorProvider {
   }
 
   public async clear() {
-    if (!this.isActiveEditor()) {
+    const content = this.currentContent();
+
+    const doc = this._editor;
+    if (!doc || !content) {
       return '';
     }
 
-    const text = this._editor?.document.getText() ?? '';
-    const lines = text.split('\n');
-
-    const range = new vscode.Range(0, 0, lines.length - 1, lines[0].length);
-
     await this._editor?.edit((builder: vscode.TextEditorEdit) => {
-      builder.delete(range);
+      builder.delete(content.range);
     });
   }
 
-  private isActiveEditor() {
+  private isActiveEditor(): boolean {
     return this._editor !== undefined;
   }
 
