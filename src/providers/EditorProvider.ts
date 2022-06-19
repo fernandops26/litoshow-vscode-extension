@@ -57,15 +57,11 @@ export class EditorProvider {
     range: vscode.Range | vscode.Selection,
     text: string
   ) {
-    if (!this.isActiveEditor()) {
+    if (!this._editor) {
       return '';
     }
 
-    await this._editor?.edit((builder: vscode.TextEditorEdit) => {
-      /*console.group('initial');
-      console.log('range: ', range);
-      console.log('text: ', text);
-      console.groupEnd();*/
+    await this._editor.edit((builder: vscode.TextEditorEdit) => {
       builder.replace(range, text);
     });
   }

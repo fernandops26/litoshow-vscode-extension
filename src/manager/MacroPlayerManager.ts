@@ -9,18 +9,15 @@ import { MacroPlayerViewer } from '../webview/MacroPlayerViewer';
 import { EventEmitter } from 'stream';
 
 export default class MacroPlayerManager {
-  private _macroRepository: MacroRepository;
   private _editorProvider: EditorProvider;
   private _extensionUri: vscode.Uri;
   private _eventEmitter: EventEmitter;
 
   constructor(
-    macroRepository: MacroRepository,
     editorProvider: EditorProvider,
     extensionUri: vscode.Uri,
     eventEmitter: EventEmitter
   ) {
-    this._macroRepository = macroRepository;
     this._editorProvider = editorProvider;
     this._extensionUri = extensionUri;
     this._eventEmitter = eventEmitter;
@@ -28,7 +25,6 @@ export default class MacroPlayerManager {
 
   public async playMacro(macro: Macro) {
     const player = MacroPlayer.getInstance(
-      this._macroRepository,
       this._editorProvider,
       this._eventEmitter,
       macro

@@ -47,9 +47,6 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     const playMacro = vscode.commands.registerCommand(
       'newlitoshow.playMacro',
       async (command) => {
-        //vscode.window.showInformationMessage('play... ' + command);
-        console.log(command.id);
-
         const macroToPlay = this._repository.findOne(command.id);
 
         if (!macroToPlay) {
@@ -142,7 +139,6 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   }
 
   refresh(): void {
-    console.log('refresh...');
     this.loadData();
     this._onDidChangeTreeData.fire();
   }

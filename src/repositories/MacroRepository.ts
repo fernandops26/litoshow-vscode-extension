@@ -20,12 +20,9 @@ export default class MacroRepository {
   }
 
   public saveOne(one: Macro) {
-    console.log('save one...');
     const all = this.findAll();
-    console.log('prev all here: ', all);
 
     all.push(one);
-    console.log('final here: ', all);
 
     this._storage.setValue(this._key, all);
   }

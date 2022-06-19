@@ -22,7 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
   const editorProvider = new EditorProvider();
 
   const macroManager = new MacroPlayerManager(
-    macroRepository,
     editorProvider,
     context.extensionUri,
     eventEmitter

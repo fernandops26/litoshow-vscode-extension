@@ -1,17 +1,11 @@
 import { EventEmitter } from 'stream';
 import { EditorProvider } from '../providers/EditorProvider';
-import MacroRepository from '../repositories/MacroRepository';
 import { Macro, Observer, Subject } from '../types';
 import toVSCode from '../utils/rangeParser';
-
-type ObserverRegister = {
-  [eventType: string]: Observer[];
-};
 
 export class MacroPlayer {
   private static instance: MacroPlayer;
   private _status: string;
-  private _macroRepository: MacroRepository;
   private _textEditorManager: EditorProvider;
   private _macro: Macro;
   private _position: number;
@@ -22,17 +16,27 @@ export class MacroPlayer {
   PAUSED: string = 'paused';
 
   constructor(
-    macroRepository: MacroRepository,
     textEditorManager: EditorProvider,
     eventEmitter: EventEmitter,
     macro: Macro
   ) {
-    this._macroRepository = macroRepository;
     this._textEditorManager = textEditorManager;
     this._macro = macro;
     this._position = 0;
     this._status = this.STOPPED;
     this._eventEmitter = eventEmitter;
+
+    this._eventEmitter.on('player:restart', () => this.restart());
+    this._eventEmitter.on('player:pause', () => this.pause());
+    this._eventEmitter.on('player:play', () => this.play());
+    this._eventEmitter.on('player:move-position', (number) =>
+      this.moveTo(number)
+    );
+  }
+
+  async restart() {
+    await this.restore();
+    await this.play();
   }
 
   notify(eventType: string): void {
@@ -44,14 +48,12 @@ export class MacroPlayer {
   }
 
   public static getInstance(
-    macroRepository: MacroRepository,
     textEditorManager: EditorProvider,
     eventEmitter: EventEmitter,
     macro: Macro
   ) {
     if (!MacroPlayer.instance) {
       MacroPlayer.instance = new MacroPlayer(
-        macroRepository,
         textEditorManager,
         eventEmitter,
         macro
@@ -63,30 +65,59 @@ export class MacroPlayer {
     return MacroPlayer.instance;
   }
 
-  public async play() {
-    if (this._status === this.PLAYING) {
-      return;
-    }
-
+  async restore() {
+    this._position = 0;
     const { currentContent } = this._macro.changes[0];
     const vscodeRange = toVSCode(currentContent.range);
 
     await this._textEditorManager.clear();
     await this._textEditorManager.setContent(vscodeRange, currentContent.text);
+  }
 
-    this._position = 0;
+  public async play() {
+    if (this._status === this.PLAYING) {
+      return;
+    }
+
     this._status = this.PLAYING;
+    await this.replaceByCurrentContext();
     this.notify('status-changed');
-    this.run();
+    await this.run();
   }
 
   private pause() {
     this._status = this.PAUSED;
+    this.notify('status-changed');
   }
 
-  private moveTo(position: number) {
+  private async moveTo(position: number) {
     this._status = this.PAUSED;
     this._position = position;
+
+    console.log('moving to... ', position);
+    const { currentContent } = this._macro.changes[this._position];
+
+    await this._textEditorManager.clear();
+    await this._textEditorManager.setContent(
+      toVSCode(currentContent.range),
+      currentContent.text
+    );
+    this.notify('status-changed');
+  }
+
+  private async replaceByCurrentContext() {
+    const content = await this._textEditorManager.currentContent();
+
+    if (!content) {
+      return;
+    }
+
+    const { currentContent } = this._macro.changes[this._position];
+
+    await this._textEditorManager.setContent(
+      content.range,
+      currentContent.text
+    );
   }
 
   private run() {

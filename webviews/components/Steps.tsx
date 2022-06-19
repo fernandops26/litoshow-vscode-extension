@@ -21,8 +21,6 @@ export default function Steps() {
     window.addEventListener('message', ({ data }) => {
       switch (data.type) {
         case 'add-step':
-          console.log(data.value);
-          console.log(steps.length);
           setSteps((oldSteps) => [
             ...oldSteps,
             {

@@ -1,13 +1,12 @@
 import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { getNonce } from '../getNonce';
-import { Observer, StatusUpdate } from '../types';
 
 //import HelloWorldView from '../webviews/pages/HelloWorldView';
 //import ReactDOMServer from 'react-dom/server';
 //import React from 'react';
 
-export class MacroPlayerViewer implements Observer {
+export class MacroPlayerViewer {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
@@ -120,14 +119,6 @@ export class MacroPlayerViewer implements Observer {
     // );
   }
 
-  public update(status: StatusUpdate): void {
-    //console.log('update received: ', status);
-    /*this._panel?.webview.postMessage({
-      type: 'update-status',
-      value: status,
-    });*/
-  }
-
   public dispose() {
     MacroPlayerViewer.currentPanel = undefined;
 
@@ -147,10 +138,21 @@ export class MacroPlayerViewer implements Observer {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
     webview.onDidReceiveMessage(async (data) => {
-      console.log('data: ', data);
       switch (data.type) {
         case 'move-position': {
-          console.log('value received: ', data.value);
+          this._eventEmitter.emit('player:move-position', data.value);
+          break;
+        }
+        case 'restart': {
+          this._eventEmitter.emit('player:restart');
+          break;
+        }
+        case 'pause': {
+          this._eventEmitter.emit('player:pause');
+          break;
+        }
+        case 'play': {
+          this._eventEmitter.emit('player:play');
           break;
         }
         case 'onInfo': {
