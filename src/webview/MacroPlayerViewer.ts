@@ -6,6 +6,11 @@ import { getNonce } from '../getNonce';
 //import ReactDOMServer from 'react-dom/server';
 //import React from 'react';
 
+interface EventListenerRegistered {
+  event: string;
+  func: any;
+}
+
 export class MacroPlayerViewer {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
@@ -19,27 +24,32 @@ export class MacroPlayerViewer {
   private readonly _extensionUri: vscode.Uri;
   private _eventEmitter: EventEmitter;
   private _disposables: vscode.Disposable[] = [];
+  private _listeners: EventListenerRegistered[] = [];
 
   public static createOrShow(
     extensionUri: vscode.Uri,
-    eventEmitter: EventEmitter
+    eventEmitter: EventEmitter,
+    macroName: string
   ) {
     const column = undefined; /*vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;*/
 
+    const macroTitle = 'Macro: ' + macroName;
+
     // If we already have a panel, show it.
     if (MacroPlayerViewer.currentPanel) {
+      MacroPlayerViewer.currentPanel._panel.title = macroTitle;
       MacroPlayerViewer.currentPanel._panel.reveal(column);
       MacroPlayerViewer.currentPanel._update();
 
-      return MacroPlayerViewer.currentPanel;
+      return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
       MacroPlayerViewer.viewType,
-      'Macro viewer',
+      macroTitle,
       column || vscode.ViewColumn.Two,
       {
         // Enable javascript in the webview
@@ -58,8 +68,6 @@ export class MacroPlayerViewer {
       extensionUri,
       eventEmitter
     );
-
-    return MacroPlayerViewer.currentPanel;
   }
 
   public static kill() {
@@ -98,12 +106,17 @@ export class MacroPlayerViewer {
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    this._eventEmitter.on('status-changed', (status) => {
+    const eventName = 'status-changed';
+    const func = (status: any) => {
       this._panel?.webview.postMessage({
         type: 'update-status',
         value: status,
       });
-    });
+    };
+
+    this._listeners.push({ event: eventName, func });
+
+    this._eventEmitter.on(eventName, func);
 
     // // Handle messages from the webview
     // this._panel.webview.onDidReceiveMessage(
@@ -131,51 +144,62 @@ export class MacroPlayerViewer {
         x.dispose();
       }
     }
+
+    while (this._listeners.length) {
+      const x = this._listeners.pop();
+      if (x) {
+        this._eventEmitter.removeListener(x.event, x.func);
+      }
+    }
   }
 
   private async _update() {
     const webview = this._panel.webview;
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
-    webview.onDidReceiveMessage(async (data) => {
-      switch (data.type) {
-        case 'move-position': {
-          this._eventEmitter.emit('player:move-position', data.value);
-          break;
-        }
-        case 'restart': {
-          this._eventEmitter.emit('player:restart');
-          break;
-        }
-        case 'pause': {
-          this._eventEmitter.emit('player:pause');
-          break;
-        }
-        case 'play': {
-          this._eventEmitter.emit('player:play');
-          break;
-        }
-        case 'onInfo': {
-          if (!data.value) {
-            return;
+    webview.onDidReceiveMessage(
+      async (data) => {
+        switch (data.type) {
+          case 'move-position': {
+            this._eventEmitter.emit('player:move-position', data.value);
+            break;
           }
-          vscode.window.showInformationMessage(data.value);
-          break;
-        }
-        case 'onError': {
-          if (!data.value) {
-            return;
+          case 'restart': {
+            this._eventEmitter.emit('player:restart');
+            break;
           }
-          vscode.window.showErrorMessage(data.value);
-          break;
+          case 'pause': {
+            this._eventEmitter.emit('player:pause');
+            break;
+          }
+          case 'play': {
+            this._eventEmitter.emit('player:play');
+            break;
+          }
+          case 'onInfo': {
+            if (!data.value) {
+              return;
+            }
+            vscode.window.showInformationMessage(data.value);
+            break;
+          }
+          case 'onError': {
+            if (!data.value) {
+              return;
+            }
+            vscode.window.showErrorMessage(data.value);
+            break;
+          }
+          // case 'tokens': {
+          //   await Util.globalState.update(accessTokenKey, data.accessToken);
+          //   await Util.globalState.update(refreshTokenKey, data.refreshToken);
+          //   break;
+          // }
         }
-        // case 'tokens': {
-        //   await Util.globalState.update(accessTokenKey, data.accessToken);
-        //   await Util.globalState.update(refreshTokenKey, data.refreshToken);
-        //   break;
-        // }
       }
-    });
+      // null,
+      // this._disposables
+    );
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

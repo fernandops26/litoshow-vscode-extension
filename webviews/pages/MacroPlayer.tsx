@@ -22,7 +22,7 @@ export default function MacroView() {
   const [status, setStatus] = useState<StatusUpdate>({
     total: 100,
     current: 0,
-    status: 'stopped',
+    status: 'paused',
     percent: 0,
   });
 

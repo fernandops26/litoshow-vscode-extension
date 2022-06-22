@@ -12,6 +12,7 @@ export default class MacroPlayerManager {
   private _editorProvider: EditorProvider;
   private _extensionUri: vscode.Uri;
   private _eventEmitter: EventEmitter;
+  private _macroPlayer: MacroPlayer | undefined;
 
   constructor(
     editorProvider: EditorProvider,
@@ -21,18 +22,50 @@ export default class MacroPlayerManager {
     this._editorProvider = editorProvider;
     this._extensionUri = extensionUri;
     this._eventEmitter = eventEmitter;
+
+    this._eventEmitter.on('player:restart', () => this.restart());
+    this._eventEmitter.on('player:pause', () => this.pause());
+    this._eventEmitter.on('player:play', () => this.play());
+    this._eventEmitter.on('player:move-position', (number) =>
+      this.moveTo(number)
+    );
   }
 
-  public async playMacro(macro: Macro) {
-    const player = MacroPlayer.getInstance(
+  private restart() {
+    console.log('restart');
+    this._macroPlayer?.restart();
+  }
+
+  private pause() {
+    console.log('pause');
+    this._macroPlayer?.pause();
+  }
+
+  private play() {
+    console.log('play');
+    this._macroPlayer?.play();
+  }
+
+  private moveTo(number: number) {
+    console.log('move to');
+    this._macroPlayer?.moveTo(number);
+  }
+
+  public async openPlayer(macro: Macro) {
+    this._macroPlayer = MacroPlayer.getInstance(
       this._editorProvider,
       this._eventEmitter,
       macro
     );
 
-    MacroPlayerViewer.createOrShow(this._extensionUri, this._eventEmitter);
+    // @todo I think we should listen and push events of each player
 
-    await player.play();
+    MacroPlayerViewer.currentPanel?.dispose();
+    MacroPlayerViewer.createOrShow(
+      this._extensionUri,
+      this._eventEmitter,
+      macro.name
+    );
   }
 
   /*private createView(): MacroPlayerViewer {

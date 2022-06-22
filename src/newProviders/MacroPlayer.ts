@@ -23,7 +23,7 @@ export class MacroPlayer {
     this._textEditorManager = textEditorManager;
     this._macro = macro;
     this._position = 0;
-    this._status = this.STOPPED;
+    this._status = this.PAUSED;
     this._eventEmitter = eventEmitter;
 
     this._eventEmitter.on('player:restart', () => this.restart());
@@ -47,6 +47,14 @@ export class MacroPlayer {
     });
   }
 
+  public static crateInstance(
+    textEditorManager: EditorProvider,
+    eventEmitter: EventEmitter,
+    macro: Macro
+  ) {
+    return new MacroPlayer(textEditorManager, eventEmitter, macro);
+  }
+
   public static getInstance(
     textEditorManager: EditorProvider,
     eventEmitter: EventEmitter,
@@ -60,7 +68,11 @@ export class MacroPlayer {
       );
     }
 
-    MacroPlayer.instance._macro = macro;
+    if (MacroPlayer.instance._macro.id !== macro.id) {
+      MacroPlayer.instance._position = 0;
+      MacroPlayer.instance._status = MacroPlayer.instance.PAUSED;
+      MacroPlayer.instance._macro = macro;
+    }
 
     return MacroPlayer.instance;
   }
@@ -85,12 +97,12 @@ export class MacroPlayer {
     await this.run();
   }
 
-  private pause() {
+  public pause() {
     this._status = this.PAUSED;
     this.notify('status-changed');
   }
 
-  private async moveTo(position: number) {
+  public async moveTo(position: number) {
     this._status = this.PAUSED;
     this._position = position;
 

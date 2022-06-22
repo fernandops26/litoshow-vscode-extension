@@ -24,8 +24,8 @@ For example:
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+- `myExtension.enable`: enable/disable this extension
+- `myExtension.thing`: set to `blah` to do something
 
 ## Known Issues
 
@@ -47,24 +47,273 @@ Fixed issue #.
 
 Added features X, Y, and Z.
 
------------------------------------------------------------------------------------------------------------
+---
+
 ## Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
 
 ## Working with Markdown
 
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
+- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
+- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
+- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
 
 ### For more information
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
+- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
+
+## On add
+
+```json
+{
+  "document": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "/Users/fernando/workspace/personal/victor/index2.js",
+      "external": "file:///Users/fernando/workspace/personal/victor/index2.js",
+      "path": "/Users/fernando/workspace/personal/victor/index2.js",
+      "scheme": "file"
+    },
+    "fileName": "/Users/fernando/workspace/personal/victor/index2.js",
+    "isUntitled": false,
+    "languageId": "javascript",
+    "version": 2,
+    "isClosed": false,
+    "isDirty": true,
+    "eol": 1,
+    "lineCount": 2
+  },
+  "contentChanges": [
+    {
+      "range": [
+        {
+          "line": 1,
+          "character": 0
+        },
+        {
+          "line": 1,
+          "character": 0
+        }
+      ],
+      "rangeOffset": 34,
+      "rangeLength": 0,
+      "text": "a"
+    }
+  ]
+}
+```
+
+## On delete one
+
+```json
+{
+  "document": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "/Users/fernando/workspace/personal/victor/index2.js",
+      "external": "file:///Users/fernando/workspace/personal/victor/index2.js",
+      "path": "/Users/fernando/workspace/personal/victor/index2.js",
+      "scheme": "file"
+    },
+    "fileName": "/Users/fernando/workspace/personal/victor/index2.js",
+    "isUntitled": false,
+    "languageId": "javascript",
+    "version": 8,
+    "isClosed": false,
+    "isDirty": true,
+    "eol": 1,
+    "lineCount": 2
+  },
+  "contentChanges": [
+    {
+      "range": [
+        {
+          "line": 1,
+          "character": 5
+        },
+        {
+          "line": 1,
+          "character": 6
+        }
+      ],
+      "rangeOffset": 39,
+      "rangeLength": 1,
+      "text": ""
+    }
+  ]
+}
+```
+
+## On select and type other word
+
+```json
+{
+  "document": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "/Users/fernando/workspace/personal/victor/index2.js",
+      "external": "file:///Users/fernando/workspace/personal/victor/index2.js",
+      "path": "/Users/fernando/workspace/personal/victor/index2.js",
+      "scheme": "file"
+    },
+    "fileName": "/Users/fernando/workspace/personal/victor/index2.js",
+    "isUntitled": false,
+    "languageId": "javascript",
+    "version": 9,
+    "isClosed": false,
+    "isDirty": true,
+    "eol": 1,
+    "lineCount": 2
+  },
+  "contentChanges": [
+    {
+      "range": [
+        {
+          "line": 1,
+          "character": 2
+        },
+        {
+          "line": 1,
+          "character": 5
+        }
+      ],
+      "rangeOffset": 36,
+      "rangeLength": 3,
+      "text": ""
+    }
+  ]
+}
+```
+
+## On UNDO one character
+
+```json
+{
+  "document": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "/Users/fernando/workspace/personal/victor/index2.js",
+      "external": "file:///Users/fernando/workspace/personal/victor/index2.js",
+      "path": "/Users/fernando/workspace/personal/victor/index2.js",
+      "scheme": "file"
+    },
+    "fileName": "/Users/fernando/workspace/personal/victor/index2.js",
+    "isUntitled": false,
+    "languageId": "javascript",
+    "version": 11,
+    "isClosed": false,
+    "isDirty": true,
+    "eol": 1,
+    "lineCount": 2
+  },
+  "contentChanges": [
+    {
+      "range": [
+        {
+          "line": 1,
+          "character": 2
+        },
+        {
+          "line": 1,
+          "character": 3
+        }
+      ],
+      "rangeOffset": 36,
+      "rangeLength": 1,
+      "text": ""
+    }
+  ],
+  "reason": 1
+}
+```
+
+## On REDO one character
+
+```json
+{
+  "document": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "/Users/fernando/workspace/personal/victor/index2.js",
+      "external": "file:///Users/fernando/workspace/personal/victor/index2.js",
+      "path": "/Users/fernando/workspace/personal/victor/index2.js",
+      "scheme": "file"
+    },
+    "fileName": "/Users/fernando/workspace/personal/victor/index2.js",
+    "isUntitled": false,
+    "languageId": "javascript",
+    "version": 12,
+    "isClosed": false,
+    "isDirty": true,
+    "eol": 1,
+    "lineCount": 2
+  },
+  "contentChanges": [
+    {
+      "range": [
+        {
+          "line": 1,
+          "character": 2
+        },
+        {
+          "line": 1,
+          "character": 2
+        }
+      ],
+      "rangeOffset": 36,
+      "rangeLength": 0,
+      "text": "s"
+    }
+  ],
+  "reason": 2
+}
+```
+
+## On select three characters and remove them
+
+```json
+{
+  "document": {
+    "uri": {
+      "$mid": 1,
+      "fsPath": "/Users/fernando/workspace/personal/victor/index2.js",
+      "external": "file:///Users/fernando/workspace/personal/victor/index2.js",
+      "path": "/Users/fernando/workspace/personal/victor/index2.js",
+      "scheme": "file"
+    },
+    "fileName": "/Users/fernando/workspace/personal/victor/index2.js",
+    "isUntitled": false,
+    "languageId": "javascript",
+    "version": 13,
+    "isClosed": false,
+    "isDirty": true,
+    "eol": 1,
+    "lineCount": 2
+  },
+  "contentChanges": [
+    {
+      "range": [
+        {
+          "line": 1,
+          "character": 0
+        },
+        {
+          "line": 1,
+          "character": 3
+        }
+      ],
+      "rangeOffset": 34,
+      "rangeLength": 3,
+      "text": ""
+    }
+  ]
+}
+```

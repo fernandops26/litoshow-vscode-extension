@@ -1,5 +1,5 @@
 import { render } from 'react-dom';
-import Steps from '@components/Steps';
+import Tabs from '@components/Sidebar/components/Tabs';
 
 export default function Sidebar() {
   const onClick = () => {
@@ -11,8 +11,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <h1>Steps</h1>
-      <Steps />
+      <Tabs />
     </>
   );
 }

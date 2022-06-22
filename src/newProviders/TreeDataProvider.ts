@@ -45,8 +45,9 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     );
 
     const playMacro = vscode.commands.registerCommand(
-      'newlitoshow.playMacro',
+      'litoshow.playMacro',
       async (command) => {
+        console.log('form command: ', command);
         const macroToPlay = this._repository.findOne(command.id);
 
         if (!macroToPlay) {
@@ -54,7 +55,7 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
           return null;
         }
 
-        await this._macroManager.playMacro(macroToPlay);
+        await this._macroManager.openPlayer(macroToPlay);
       }
     );
 

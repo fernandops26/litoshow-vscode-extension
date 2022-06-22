@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { HelloWorldPanel } from './HelloWorldPanel';
 import { HighlightProvider } from './HighlightProvider';
 import { MacroRecorder } from './newProviders/MacroRecorder';
-import { SidebarProvider } from './providers/SidebarProvider';
+import { SidebarWebview } from './webview/SidebarWebview';
 import { TreeDataProvider } from './newProviders/TreeDataProvider';
 import { MacroPlayerViewer } from './webview/MacroPlayerViewer';
 import MacroPlayerManager from './manager/MacroPlayerManager';
@@ -13,6 +13,7 @@ import MacroRepository from './repositories/MacroRepository';
 import { EditorProvider } from './providers/EditorProvider';
 
 import { EventEmitter } from 'events';
+import MacroLocalManager from './manager/MacroLocalManager';
 
 export function activate(context: vscode.ExtensionContext) {
   const eventEmitter = new EventEmitter();
@@ -26,6 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.extensionUri,
     eventEmitter
   );
+
+  new MacroLocalManager(eventEmitter, macroRepository, macroManager);
 
   const treeProvider = TreeDataProvider.register(
     context,
@@ -45,13 +48,16 @@ export function activate(context: vscode.ExtensionContext) {
 
   MacroRecorder.register(context, macroRepository, treeProvider);
 
-  /*const sidebarProvider = new SidebarProvider(context.extensionUri);
+  const sidebarProvider = new SidebarWebview(
+    context.extensionUri,
+    eventEmitter
+  );
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       'litoshow-sidebar',
       sidebarProvider
     )
-  );*/
+  );
 
   //HelloWorldPanel.createOrShow(context.extensionUri);
 }

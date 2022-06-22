@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.hover\:bg-vscode-background:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
 :root {
   --container-paddding: 20px;
   --input-padding-vertical: 6px;

@@ -67,8 +67,8 @@ export class EditorProvider {
   }
 
   public async insertContent(position: vscode.Position, text: string) {
-    if (!this.isActiveEditor()) {
-      return '';
+    if (!this._editor) {
+      return;
     }
 
     await this._editor?.edit((builder: vscode.TextEditorEdit) => {
