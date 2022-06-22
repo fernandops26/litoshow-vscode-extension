@@ -45,7 +45,7 @@ export default function MyTabs() {
         <Tab.Panel>
           <MacroList />
         </Tab.Panel>
-        <Tab.Panel>Content 2</Tab.Panel>
+        <Tab.Panel>Coming</Tab.Panel>
       </Tab.Panels>
     </Tab.Group>
   );

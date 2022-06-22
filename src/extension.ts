@@ -46,12 +46,13 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );*/
 
-  MacroRecorder.register(context, macroRepository, treeProvider);
+  MacroRecorder.register(context, macroRepository, eventEmitter);
 
   const sidebarProvider = new SidebarWebview(
     context.extensionUri,
     eventEmitter
   );
+
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       'litoshow-sidebar',
@@ -167,3 +168,8 @@ export function activate(context: vscode.ExtensionContext) {
 // }
 // this method is called when your extension is deactivated
 export function deactivate() {}
+
+// function error handler for the extension
+export function errorHandler(error: Error) {
+  console.error(error);
+}

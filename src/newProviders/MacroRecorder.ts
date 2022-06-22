@@ -8,20 +8,18 @@ import {
   toInitialMacroChange,
   toMacroDocumentChangeEvent,
 } from '../utils/toMacroChangeEvent';
+import { EventEmitter } from 'stream';
 
 export class MacroRecorder {
   private _macroRepository: MacroRepository;
   private _disposable: vscode.Disposable;
   private _textEditorManager: EditorProvider;
   private _activeMacro: Macro | null;
-  private _treeProvider: TreeDataProvider;
+  private _eventEmitter: EventEmitter;
 
-  constructor(
-    _macroRepository: MacroRepository,
-    _treeProvider: TreeDataProvider
-  ) {
+  constructor(_macroRepository: MacroRepository, _eventEmitter: EventEmitter) {
     this._macroRepository = _macroRepository;
-    this._treeProvider = _treeProvider;
+    this._eventEmitter = _eventEmitter;
     this._textEditorManager = new EditorProvider();
     this._activeMacro = null;
 
@@ -93,7 +91,9 @@ export class MacroRecorder {
         }
 
         this._macroRepository.saveOne(this._activeMacro);
-        this._treeProvider.refresh();
+        const list = this._macroRepository.findAll();
+
+        this._eventEmitter.emit('client:updateMacroList', { macros: list });
         this._activeMacro = null;
       }
     );
@@ -124,11 +124,9 @@ export class MacroRecorder {
   public static register(
     context: vscode.ExtensionContext,
     macroRepository: MacroRepository,
-    treeProvider: TreeDataProvider
+    eventEmitter: EventEmitter
   ) {
-    vscode.window.showInformationMessage('register recorder');
-
-    const macroRecorder = new MacroRecorder(macroRepository, treeProvider);
+    const macroRecorder = new MacroRecorder(macroRepository, eventEmitter);
 
     context.subscriptions.push(macroRecorder);
   }

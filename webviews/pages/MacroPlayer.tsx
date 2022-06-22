@@ -79,50 +79,46 @@ export default function MacroView() {
     });
   };
 
-  //const percent = Math.round((status.current / status.total) * 100);
-
-  const isLast = status.current === status.total;
-
   const renderMainButton = () => {
     let button = <></>;
     if (status.status == 'playing') {
       button = (
-        <div className='play m-3 text-center'>
+        <div className='play text-center'>
           <div
-            className='p-2 shadow rounded-full m-auto cursor-pointer'
+            className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPause}
           >
-            <PauseIcon className='w-10 h-10' />
+            <PauseIcon className='w-6 h-6' />
           </div>
-          <span>Pause</span>
+          {/*<span>Pause</span>*/}
         </div>
       );
     }
 
     if (status.status == 'paused') {
       button = (
-        <div className='play m-3 text-center'>
+        <div className='play text-center'>
           <div
-            className='p-2 shadow rounded-full m-auto cursor-pointer'
+            className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPlay}
           >
-            <PlayIcon className='w-10 h-10' />
+            <PlayIcon className='w-6 h-6' />
           </div>
-          <span>Play</span>
+          {/*<span>Play</span>*/}
         </div>
       );
     }
 
     if (status.status == 'stopped') {
       button = (
-        <div className='play m-3 text-center'>
+        <div className='play text-center'>
           <div
-            className='p-2 shadow rounded-full m-auto cursor-pointer'
+            className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickRestart}
           >
-            <RefreshIcon className='w-10 h-10' />
+            <RefreshIcon className='w-6 h-6' />
           </div>
-          <span>Restart</span>
+          {/*<span>Restart</span>*/}
         </div>
       );
     }
@@ -131,28 +127,34 @@ export default function MacroView() {
   };
 
   return (
-    <div>
-      <div className='flex justify-center flex-wrap'>
-        <h1 className='text-white text-xl'>Macro Player</h1>
-      </div>
-      <div className='p-4 bg-white rounded shadow m-5 text-gray-700'>
+    <div className='p-4'>
+      <div className='bg-white rounded shadow text-gray-700'>
         <div className='controls flex justify-center items-center'>
-          <div className='fordward m-3 text-center'>
+          {/*<div className='fordward m-3 text-center'>
             <div className='p-2 shadow rounded-full m-auto cursor-pointer'>
               <ChevronLeftIcon className='h-8 w-8' />
             </div>
             <span>Back</span>
-          </div>
-          {renderMainButton()}
-          <div className='backward m-3 text-center'>
+          </div>*/}
+
+          {/*<div className='backward m-3 text-center'>
             <div className='p-2 shadow rounded-full m-auto cursor-pointer'>
               <ChevronRightIcon className='h-8 w-8' />
             </div>
             <span>Skip</span>
+          </div>*/}
+        </div>
+        <div className='flex items-center p-2'>
+          {renderMainButton()}
+          <div className='px-4 w-full'>
+            <Slider
+              min={0}
+              max={100}
+              value={status.percent}
+              onChange={onChange}
+            />
           </div>
         </div>
-        <Slider min={0} max={100} value={status.percent} onChange={onChange} />
-        {status.status}
       </div>
     </div>
   );
