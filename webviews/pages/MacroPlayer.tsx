@@ -117,7 +117,7 @@ export default function MacroView() {
 
   return (
     <div className='p-4'>
-      <div className='bg-white rounded shadow text-gray-700'>
+      <div className='bg-vscode-editor-foreground rounded shadow text-gray-700'>
         <div className='flex items-center p-2'>
           {renderMainButton()}
           <div className='px-4 w-full'>

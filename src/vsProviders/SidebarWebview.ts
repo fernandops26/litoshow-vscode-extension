@@ -47,6 +47,13 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
           });
           break;
         }
+        case 'removeMacro': {
+          console.log('remove: ', data);
+          await vscode.commands.executeCommand('litoshow.removeMacro', {
+            id: data.data.macroId,
+          });
+          break;
+        }
         case 'onError': {
           if (!data.value) {
             return;

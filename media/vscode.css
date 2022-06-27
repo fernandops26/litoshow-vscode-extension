@@ -6,6 +6,10 @@
   background: var(--vscode-list-hoverBackground);
 }
 
+.bg-vscode-editor-foreground {
+  color: var(--vscode-editor-foreground);
+}
+
 :root {
   --container-paddding: 20px;
   --input-padding-vertical: 6px;

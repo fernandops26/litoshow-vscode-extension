@@ -7,9 +7,11 @@ import Recorder from './services/Recorder';
 import Trigger from './services/Trigger';
 import Player from './services/Player';
 import { MacroWebview } from './vsProviders/MacroWebview';
+import Storage from './repositories/MacroRepository';
 
 export function activate(context: vscode.ExtensionContext) {
   const eventEmitter = new EventEmitter();
+  const macroRepository = Storage.getInstance(context);
 
   let record = vscode.commands.registerCommand(
     'newlitoshow.createMacro',
@@ -32,6 +34,16 @@ export function activate(context: vscode.ExtensionContext) {
     (data) => {
       player.select(data.id);
       MacroWebview.createOrShow(context.extensionUri, eventEmitter, data.id);
+    }
+  );
+
+  let remove = vscode.commands.registerCommand(
+    'litoshow.removeMacro',
+    async (data) => {
+      //player.select(data.id);
+      // @todo dispose player if macro is selected
+      await macroRepository.remove(data.id);
+      await vscode.commands.executeCommand('litoshow.updateClientList');
     }
   );
 
@@ -63,6 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   //let type = vscode.commands.registerCommand('type', Replay.onType);
   context.subscriptions.push(
+    remove,
     record,
     newPlay,
     select,

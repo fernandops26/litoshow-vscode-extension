@@ -1,4 +1,5 @@
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
+import MacroItemMenu from './MacroItemMenu';
 
 export default function MacroItem({ item }) {
   const onSelect = () => {
@@ -16,7 +17,8 @@ export default function MacroItem({ item }) {
         {item.name}
       </span>
 
-      <DotsHorizontalIcon className='ml-auto w-4 h-4 invisible group-hover:visible cursor-pointer' />
+      <MacroItemMenu id={item.id || item.name} />
+      {/*<DotsHorizontalIcon className='ml-auto w-4 h-4 invisible group-hover:visible cursor-pointer' />*/}
     </div>
   );
 }
