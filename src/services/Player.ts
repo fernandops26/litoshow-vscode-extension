@@ -120,8 +120,9 @@ export default class Player {
     this.start();
   }
 
-  public pause() {
+  public async pause() {
     this.updateStatus(PAUSED);
+    await vscode.window.showInformationMessage('Macro paused');
   }
 
   private updateStatus(status: string) {
@@ -143,9 +144,10 @@ export default class Player {
     this.updateStatus(PAUSED);
   }
 
-  private finished() {
+  private async finished() {
     this.updateStatus(STOPPED);
     this._currentBuffer = undefined;
+    await vscode.window.showInformationMessage('Macro finished');
   }
 
   public async start() {
@@ -204,7 +206,7 @@ export default class Player {
     console.log('autoplay');
     const self = this;
     (function me() {
-      if (self._status === PAUSED) {
+      if (self._status === PAUSED || self._status === STOPPED) {
         console.log('paused :(');
         return;
       }
@@ -310,7 +312,8 @@ export default class Player {
 
     if (!buffer) {
       vscode.window.showErrorMessage('No buffer to advance');
-      return;
+      this.finished();
+      return done();
     }
 
     if (buffers.isStopPoint(buffer)) {

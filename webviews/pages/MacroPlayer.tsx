@@ -75,7 +75,7 @@ export default function MacroView() {
     let button = <></>;
     if (status.status == 'playing') {
       button = (
-        <div className='play text-center'>
+        <div className='play text-center text-white'>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPause}
@@ -88,7 +88,7 @@ export default function MacroView() {
 
     if (status.status == 'paused') {
       button = (
-        <div className='play text-center'>
+        <div className='play text-center text-white'>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPlay}
@@ -101,7 +101,7 @@ export default function MacroView() {
 
     if (status.status == 'stopped') {
       button = (
-        <div className='play text-center'>
+        <div className='play text-center text-white'>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickRestart}

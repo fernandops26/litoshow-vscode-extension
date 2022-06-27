@@ -7,7 +7,7 @@
 }
 
 .bg-vscode-editor-foreground {
-  color: var(--vscode-editor-foreground);
+  background: var(--vscode-textCodeBlock-background);
 }
 
 :root {
