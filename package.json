@@ -14,11 +14,14 @@
     "onCommand:newlitoshow.createMacro",
     "onCommand:newlitoshow.saveMacro",
     "onCommand:newlitoshow.refreshMacro",
-    "onCommand:litoshow.playMacro",
+    "onCommand:litoshow.selectMacro",
     "onCommand:newlitoshow.removeMacro",
     "onCommand:newlitoshow.viewPlayer",
     "onView:litoshow-sidebar",
-    "onView:litoshow-tree"
+    "onView:litoshow-tree",
+    "onCommand:litoshow.experiment.recordMacro",
+    "onCommand:litoshow.experiment.playMacro",
+    "onCommand:litoshow.experiment.deleteMacro"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -109,10 +112,35 @@
         "icon": "media/refresh.svg"
       },
       {
+        "command": "litoshow.deselectMacro",
+        "category": "Litoshow",
+        "title": "Deselect Macro"
+      },
+      {
+        "command": "litoshow.selectMacro",
+        "category": "Litoshow",
+        "title": "Select",
+        "icon": "media/play.svg"
+      },
+      {
         "command": "litoshow.playMacro",
         "category": "Litoshow",
-        "title": "Play",
-        "icon": "media/play.svg"
+        "title": "Play Macro"
+      },
+      {
+        "command": "litoshow.restartMacro",
+        "category": "Litoshow",
+        "title": "Restart Macro"
+      },
+      {
+        "command": "litoshow.moveMacroPosition",
+        "category": "Litoshow",
+        "title": "Move Macro Position"
+      },
+      {
+        "command": "litoshow.pauseMacro",
+        "category": "Litoshow",
+        "title": "Pause Macro"
       },
       {
         "command": "newlitoshow.refreshAll",
@@ -123,6 +151,26 @@
         "command": "newlitoshow.viewPlayer",
         "category": "Litoshow",
         "title": "View Player"
+      },
+      {
+        "command": "litoshow.updateClientList",
+        "category": "Litoshow",
+        "title": "Update Client List"
+      },
+      {
+        "command": "litoshow.experiment.recordMacro",
+        "category": "Litoshow",
+        "title": "Record Macro(Experiment)"
+      },
+      {
+        "command": "litoshow.experiment.playMacro",
+        "key": "cmd+shift+t p",
+        "title": "Play Macro(Experiment)"
+      },
+      {
+        "command": "litoshow.experiment.saveMacro",
+        "key": "cmd+shift+t s",
+        "title": "Save Macro(Experiment)"
       }
     ]
   },
@@ -170,7 +218,8 @@
     "uuid": "8.3.2",
     "rc-slider": "10.0.0",
     "tailwindcss": "3.0.24",
-    "@headlessui/react": "1.6.5"
+    "@headlessui/react": "1.6.5",
+    "p-queue": "7.2.0"
   },
   "_moduleAliases": {
     "@componentes": "out",

@@ -1,11 +1,23 @@
 import * as vscode from 'vscode';
-import { getNonce } from './getNonce';
+import { EventEmitter } from 'stream';
+import { getNonce } from './../getNonce';
 
-export class SidebarProvider implements vscode.WebviewViewProvider {
+export class SidebarWebview implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(
+    private readonly _extensionUri: vscode.Uri,
+    private readonly _eventEmitter: EventEmitter
+  ) {
+    this._eventEmitter.on('client:updateMacroList', (data) => {
+      console.log('data received: ', data);
+      this._view?.webview.postMessage({
+        type: 'updateMacroList',
+        value: data,
+      });
+    });
+  }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
@@ -14,18 +26,25 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       // Allow scripts in the webview
       enableScripts: true,
 
-      localResourceRoots: [this._extensionUri],
+      localResourceRoots: [
+        vscode.Uri.joinPath(this._extensionUri, 'media'),
+        vscode.Uri.joinPath(this._extensionUri, 'out'),
+      ],
     };
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
-        case 'onInfo': {
-          if (!data.value) {
-            return;
-          }
-          vscode.window.showInformationMessage(data.value);
+        case 'requestMacroList': {
+          vscode.commands.executeCommand('litoshow.updateClientList');
+          break;
+        }
+        case 'selectMacro': {
+          console.log('select: ', data);
+          await vscode.commands.executeCommand('litoshow.selectMacro', {
+            id: data.data.macroId,
+          });
           break;
         }
         case 'onError': {
@@ -44,13 +63,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
-    );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
     );
 
+    const stylesResetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
+    );
+    const stylesMainUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'styles.css')
+    );
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'out', 'Sidebar.js')
     );
@@ -72,8 +94,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             -->
             <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="${styleResetUri}" rel="stylesheet">
+            <link href="${stylesResetUri}" rel="stylesheet">
             <link href="${styleVSCodeUri}" rel="stylesheet">
+            <link href="${stylesMainUri}" rel="stylesheet">
             <script nonce="${nonce}">
                 const tsvscode = acquireVsCodeApi();
             </script>
@@ -84,4 +107,3 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     </html>`;
   }
 }
-//<!--<link href="${styleMainUri}" rel="stylesheet">-->

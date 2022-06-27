@@ -22,7 +22,6 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        HelloWorldView: resolve(__dirname, 'webviews/pages/HelloWorldView.tsx'),
         Sidebar: resolve(__dirname, 'webviews/pages/Sidebar.tsx'),
         MacroPlayer: resolve(__dirname, 'webviews/pages/MacroPlayer.tsx'),
         styles: resolve(__dirname, 'media/vscode.css'),

@@ -1,12 +1,11 @@
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
-import { Macro } from './../../../../../src/types';
 
 export default function MacroItem({ item }) {
   const onSelect = () => {
     tsvscode.postMessage({
       type: 'selectMacro',
       data: {
-        macroId: item.id,
+        macroId: item.id || item.name,
       },
     });
   };

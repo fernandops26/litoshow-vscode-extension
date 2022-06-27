@@ -2,23 +2,19 @@ import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { getNonce } from '../getNonce';
 
-//import HelloWorldView from '../webviews/pages/HelloWorldView';
-//import ReactDOMServer from 'react-dom/server';
-//import React from 'react';
-
 interface EventListenerRegistered {
   event: string;
   func: any;
 }
 
-export class MacroPlayerViewer {
+export class MacroWebview {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
 
-  public static currentPanel: MacroPlayerViewer | undefined;
+  public static currentPanel: MacroWebview | undefined;
 
-  public static readonly viewType = 'macro-player-viewer';
+  public static readonly viewType = 'macro-viewer';
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -38,17 +34,17 @@ export class MacroPlayerViewer {
     const macroTitle = 'Macro: ' + macroName;
 
     // If we already have a panel, show it.
-    if (MacroPlayerViewer.currentPanel) {
-      MacroPlayerViewer.currentPanel._panel.title = macroTitle;
-      MacroPlayerViewer.currentPanel._panel.reveal(column);
-      MacroPlayerViewer.currentPanel._update();
+    if (MacroWebview.currentPanel) {
+      MacroWebview.currentPanel._panel.title = macroTitle;
+      MacroWebview.currentPanel._panel.reveal(column);
+      MacroWebview.currentPanel._update();
 
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-      MacroPlayerViewer.viewType,
+      MacroWebview.viewType,
       macroTitle,
       column || vscode.ViewColumn.Two,
       {
@@ -63,7 +59,7 @@ export class MacroPlayerViewer {
       }
     );
 
-    MacroPlayerViewer.currentPanel = new MacroPlayerViewer(
+    MacroWebview.currentPanel = new MacroWebview(
       panel,
       extensionUri,
       eventEmitter
@@ -71,8 +67,8 @@ export class MacroPlayerViewer {
   }
 
   public static kill() {
-    MacroPlayerViewer.currentPanel?.dispose();
-    MacroPlayerViewer.currentPanel = undefined;
+    MacroWebview.currentPanel?.dispose();
+    MacroWebview.currentPanel = undefined;
   }
 
   public static revive(
@@ -80,7 +76,7 @@ export class MacroPlayerViewer {
     extensionUri: vscode.Uri,
     eventEmitter: EventEmitter
   ) {
-    MacroPlayerViewer.currentPanel = new MacroPlayerViewer(
+    MacroWebview.currentPanel = new MacroWebview(
       panel,
       extensionUri,
       eventEmitter
@@ -133,7 +129,8 @@ export class MacroPlayerViewer {
   }
 
   public dispose() {
-    MacroPlayerViewer.currentPanel = undefined;
+    MacroWebview.currentPanel = undefined;
+    vscode.commands.executeCommand('litoshow.deselectMacro');
 
     // Clean up our resources
     this._panel.dispose();
@@ -161,19 +158,21 @@ export class MacroPlayerViewer {
       async (data) => {
         switch (data.type) {
           case 'move-position': {
-            this._eventEmitter.emit('player:move-position', data.value);
+            vscode.commands.executeCommand('litoshow.moveMacroPosition', {
+              position: data.value,
+            });
             break;
           }
           case 'restart': {
-            this._eventEmitter.emit('player:restart');
+            vscode.commands.executeCommand('litoshow.restartMacro');
             break;
           }
           case 'pause': {
-            this._eventEmitter.emit('player:pause');
+            vscode.commands.executeCommand('litoshow.pauseMacro');
             break;
           }
           case 'play': {
-            this._eventEmitter.emit('player:play');
+            vscode.commands.executeCommand('litoshow.playMacro');
             break;
           }
           case 'onInfo': {
