@@ -14,6 +14,14 @@ type SerializedPosition = {
 
 type SerializedRange = SerializedPosition[];
 
+interface SerializedDocument {
+  uri: string;
+  languageId: string;
+  version: number;
+  fileName: string;
+  scheme: string;
+}
+
 interface SerializedChangeEvent {
   range: SerializedRange;
   rangeOffset: number;
@@ -34,18 +42,22 @@ export interface SerializedStartingPoint {
   language: string;
   position: number;
   selections: SerializedSelection[];
+  document: SerializedDocument;
 }
+
 export interface SerializedStopPoint {
   type: BufferTypes.Stop;
   stop: { name: string | null };
   position: number;
 }
+
 export interface SerializedFrame {
   type: BufferTypes.Change;
   editorContent: string;
   changes: SerializedChangeEvent[];
   selections: SerializedSelection[];
   position: number;
+  document: SerializedDocument;
 }
 
 export type SerializedBuffer =
@@ -87,9 +99,18 @@ function rehydrateChangeEvent(
   };
 }
 
+function rehydrateDocument(document: vscode.TextDocument): SerializedDocument {
+  return {
+    uri: document.uri.path,
+    languageId: document.languageId,
+    version: document.version,
+    fileName: document.fileName,
+    scheme: document.uri.scheme,
+  };
+}
+
 export function rehydrateBuffer(serialized: SerializedBuffer): buffers.Buffer {
   if (isStopPoint(serialized)) {
-    console.log('here1');
     return {
       type: BufferTypes.Stop,
       position: serialized.position,
@@ -100,8 +121,8 @@ export function rehydrateBuffer(serialized: SerializedBuffer): buffers.Buffer {
   }
 
   if (isStartingPoint(serialized)) {
-    console.log('here2');
     return {
+      document: serialized.document,
       type: BufferTypes.Starting,
       position: serialized.position,
       editorContent: serialized.editorContent,
@@ -110,8 +131,8 @@ export function rehydrateBuffer(serialized: SerializedBuffer): buffers.Buffer {
     };
   }
 
-  console.log('|| changes in rehydrate: ', serialized.changes);
   return {
+    document: serialized.document,
     type: BufferTypes.Change,
     editorContent: serialized.editorContent,
     position: serialized.position,

@@ -16,8 +16,13 @@ type WithType = {
   type: number;
 };
 
+type WithDocument = {
+  document: any;
+};
+
 export type StartingPoint = WithPosition &
-  WithType & {
+  WithType &
+  WithDocument & {
     editorContent: string;
     language: string;
     selections: vscode.Selection[];
@@ -31,7 +36,8 @@ export type StopPoint = WithPosition &
   };
 
 export type Frame = WithPosition &
-  WithType & {
+  WithType &
+  WithDocument & {
     editorContent: string;
     changes: vscode.TextDocumentContentChangeEvent[];
     selections: vscode.Selection[];

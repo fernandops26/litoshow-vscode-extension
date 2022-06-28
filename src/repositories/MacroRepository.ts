@@ -59,7 +59,6 @@ export default class MacroRepository {
 
     const found = all.find((item) => item.name === name) as Macro;
     const buffers: Array<any> = found.buffers;
-    console.log('get by name buffers: ', buffers);
 
     return {
       ...(found as Macro),

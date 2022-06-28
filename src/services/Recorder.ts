@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import * as buffers from './BufferManager';
 import Storage from '../repositories/MacroRepository';
+import { getRelativeFilePath } from '../utils/filePathInfo';
 
 type Mutable<Type> = {
   -readonly [Key in keyof Type]: Type[Key];
@@ -59,12 +60,6 @@ export default class Recorder {
       subscriptions
     );
 
-    /*const createMacro = vscode.commands.registerCommand(
-      'newlitoshow.createMacro',
-      this.createMacro,
-      this
-    );*/
-
     const insertNamedStop = vscode.commands.registerCommand(
       'litoshow.experiment.insertNamedStop',
       this.insertNamedStop,
@@ -94,10 +89,6 @@ export default class Recorder {
     );
 
     this.createMacro();
-
-    /*if (this._textEditor) {
-      this.insertStartingPoint(this._textEditor);
-    }*/
   }
 
   private async createMacro() {
@@ -124,9 +115,9 @@ export default class Recorder {
 
     vscode.window.showInformationMessage('Recording your macro.');
 
-    this._textEditor = vscode.window.activeTextEditor;
-    if (this._textEditor) {
-      this.insertStartingPoint(this._textEditor);
+    const textEditor = vscode.window.activeTextEditor;
+    if (textEditor) {
+      this.insertStartingPoint(textEditor);
     }
   }
 
@@ -141,6 +132,10 @@ export default class Recorder {
 
     buffers.clear();
     buffers.insert({
+      document: {
+        ...textEditor.document,
+        relative: getRelativeFilePath(textEditor.document.uri.fsPath),
+      },
       type: BufferTypes.Starting,
       position: this._buffers++,
       editorContent: content,
@@ -199,6 +194,7 @@ export default class Recorder {
     if (!this._activeMacro) {
       return;
     }
+    console.log('on did change text document: ', e);
     // @TODO: Gets called while playing -- need to stop recording once over
 
     // store changes, selection change will commit
@@ -216,13 +212,12 @@ export default class Recorder {
     // Only allow recording to one active editor at a time
     // Breaks when you leave but that's fine for now.
 
+    console.log('ee: ', e);
     if (!this._activeMacro) {
       return;
     }
 
-    if (e.textEditor !== this._textEditor) {
-      return;
-    }
+    const textEditor = e.textEditor;
 
     const changes = this._currentChanges;
     console.log('current changes: ', changes);
@@ -232,9 +227,20 @@ export default class Recorder {
     const selections = editorSelections;
     this._currentChanges = [];
 
+    /*console.log(textEditor.document.uri);
+    console.log('relative: ', getRelativeFilePath(textEditor.document.uri.fsPath));
+    console.log(
+      'filename: ',
+      path.relative(process.cwd(), textEditor.document.fileName)
+    );*/
+
     buffers.insert({
+      document: {
+        ...textEditor.document,
+        relative: getRelativeFilePath(textEditor.document.uri.fsPath),
+      },
       type: BufferTypes.Change,
-      editorContent: this._textEditor.document.getText(),
+      editorContent: textEditor.document.getText(),
       changes,
       selections,
       position: this._buffers++,

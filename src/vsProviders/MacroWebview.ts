@@ -132,9 +132,6 @@ export class MacroWebview {
     MacroWebview.currentPanel = undefined;
     vscode.commands.executeCommand('litoshow.deselectMacro');
 
-    // Clean up our resources
-    this._panel.dispose();
-
     while (this._disposables.length) {
       const x = this._disposables.pop();
       if (x) {
@@ -148,6 +145,9 @@ export class MacroWebview {
         this._eventEmitter.removeListener(x.event, x.func);
       }
     }
+
+    // Clean up our resources
+    this._panel.dispose();
   }
 
   private async _update() {

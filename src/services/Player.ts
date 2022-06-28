@@ -4,6 +4,7 @@ import Storage from '../repositories/MacroRepository';
 //import * as Queue from 'promise-queue';
 import PQueue from 'p-queue';
 import { EventEmitter } from 'stream';
+import { getEditor } from '../utils/editorResolver';
 
 const stopPointBreakChar = `\n`; // ENTER
 const replayConcurrency = 1;
@@ -52,6 +53,7 @@ export default class Player {
   private _currentMacroName: string | undefined;
   private _currentBuffer: buffers.Buffer | undefined;
   private _eventEmitter: EventEmitter;
+  private _currentWorkspaceFolder: string | undefined;
 
   public static register(
     context: vscode.ExtensionContext,
@@ -168,26 +170,33 @@ export default class Player {
       this._currentMacroName = macro.name;
     }
 
+    const workspacePicked = await vscode.window.showQuickPick(
+      (vscode.workspace.workspaceFolders || []).map((item) => item.uri.fsPath)
+    );
+
+    if (!workspacePicked) {
+      console.log('no workspace selected');
+      return;
+    }
+
+    vscode.window.showInformationMessage(
+      'Selected workspace: ' + workspacePicked
+    );
+    this._currentWorkspaceFolder = workspacePicked;
+
     this.updateStatus(PLAYING);
     if (!this._currentBuffer) {
-      console.log('no current buffer');
       const macro = this._storage.getByName(this._currentMacroName);
       buffers.inject(macro.buffers);
 
-      console.log('injected macro', macro);
       this._currentBuffer = buffers.get(0);
       if (!this._currentBuffer) {
         vscode.window.showErrorMessage('No active recording');
         return;
       }
 
-      //old: const textEditor = vscode.window.activeTextEditor;
-      const textEditor = vscode.window.activeTextEditor;
-      const visibleEditor = vscode.window.visibleTextEditors[0];
-      console.log('text editor: ', textEditor);
-      console.log('visible editor: ', visibleEditor);
       if (buffers.isStartingPoint(this._currentBuffer)) {
-        await this.setStartingPoint(this._currentBuffer, visibleEditor);
+        await this.setStartingPoint(this._currentBuffer);
       }
 
       vscode.window.showInformationMessage(
@@ -203,16 +212,13 @@ export default class Player {
   }
 
   private autoPlay() {
-    console.log('autoplay');
     const self = this;
     (function me() {
       if (self._status === PAUSED || self._status === STOPPED) {
-        console.log('paused :(');
         return;
       }
 
       setTimeout(async () => {
-        console.log('proccess buffer');
         await self.processBuffer();
         me();
       }, 50);
@@ -235,40 +241,31 @@ export default class Player {
     );
   }
 
-  private async setStartingPoint(
-    startingPoint: buffers.StartingPoint,
-    textEditor: vscode.TextEditor | undefined
-  ) {
-    let editor = textEditor;
-    // if no open text editor, open one
-    if (!editor) {
-      vscode.window.showInformationMessage('opening new window');
-      const document = await vscode.workspace.openTextDocument({
-        language: startingPoint.language,
-        content: startingPoint.editorContent,
-      });
+  private async setStartingPoint(startingPoint: buffers.StartingPoint) {
+    vscode.window.showInformationMessage('opening new window');
+    const editor = await getEditor(
+      this._currentWorkspaceFolder,
+      startingPoint.document.relative
+    );
 
-      editor = await vscode.window.showTextDocument(document);
-    } else {
-      const existingEditor = editor;
-      await existingEditor.edit((edit) => {
-        // update initial file content
-        const l = existingEditor.document.lineCount;
-        const range = new vscode.Range(
-          new vscode.Position(0, 0),
-          new vscode.Position(
-            l,
-            Math.max(
-              0,
-              existingEditor.document.lineAt(Math.max(0, l - 1)).text.length - 1
-            )
+    const existingEditor = editor;
+    await existingEditor.edit((edit) => {
+      // update initial file content
+      const l = existingEditor.document.lineCount;
+      const range = new vscode.Range(
+        new vscode.Position(0, 0),
+        new vscode.Position(
+          l,
+          Math.max(
+            0,
+            existingEditor.document.lineAt(Math.max(0, l - 1)).text.length - 1
           )
-        );
+        )
+      );
 
-        edit.delete(range);
-        edit.insert(new vscode.Position(0, 0), startingPoint.editorContent);
-      });
-    }
+      edit.delete(range);
+      edit.insert(new vscode.Position(0, 0), startingPoint.editorContent);
+    });
 
     if (editor) {
       this.updateSelections(startingPoint.selections, editor);
@@ -299,16 +296,8 @@ export default class Player {
     );
   }
 
-  private advanceBuffer(done: Function, userInput: string) {
-    console.log('advanced buffer');
-    //const editor = vscode.window.activeTextEditor;
-    const editor = vscode.window.visibleTextEditors[0];
+  private async advanceBuffer(done: Function, userInput: string) {
     const buffer = this._currentBuffer;
-
-    if (!editor) {
-      vscode.window.showErrorMessage('No active editor');
-      return;
-    }
 
     if (!buffer) {
       vscode.window.showErrorMessage('No buffer to advance');
@@ -326,6 +315,11 @@ export default class Player {
 
     console.log('----->buffer: ', buffer);
     const { changes, selections } = <buffers.Frame>buffer;
+
+    const editor = await getEditor(
+      this._currentWorkspaceFolder,
+      buffer.document.relative
+    );
 
     const updateSelectionAndAdvanceToNextBuffer = () => {
       if (selections.length) {
