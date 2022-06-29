@@ -5,7 +5,7 @@ import { ensureFilepath } from './ensureFile';
 export async function getEditor(
   workspaceFolderPath: string | undefined,
   fsPath: string
-) {
+): Promise<vscode.TextEditor> {
   const filePath = path.join(workspaceFolderPath || '', fsPath);
 
   let editor = getActiveEditorIfMatch(filePath);
@@ -18,7 +18,7 @@ export async function getEditor(
     ensureFilepath(filePath);
     const document = await vscode.workspace.openTextDocument(filePath);
     editor = await vscode.window.showTextDocument(document, {
-      viewColumn: vscode.ViewColumn.Active,
+      viewColumn: vscode.ViewColumn.One,
     });
   }
 

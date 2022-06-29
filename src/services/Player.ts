@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as buffers from './BufferManager';
 import Storage from '../repositories/MacroRepository';
-//import * as Queue from 'promise-queue';
 import PQueue from 'p-queue';
 import { EventEmitter } from 'stream';
 import { getEditor } from '../utils/editorResolver';
@@ -21,29 +20,29 @@ const STOPPED: string = 'stopped';
 const PAUSED: string = 'paused';
 
 replayQueue.on('active', () => {
-  console.log(
-    `Working on item #${++count}.  Size: ${replayQueue.size}  Pending: ${
-      replayQueue.pending
-    }`
-  );
+  // console.log(
+  //   `Working on item #${++count}.  Size: ${replayQueue.size}  Pending: ${
+  //     replayQueue.pending
+  //   }`
+  // );
 });
 
 replayQueue.on('add', () => {
-  console.log(
-    `Task is added.  Size: ${replayQueue.size}  Pending: ${replayQueue.pending}`
-  );
+  // console.log(
+  //   `Task is added.  Size: ${replayQueue.size}  Pending: ${replayQueue.pending}`
+  // );
 });
 
 replayQueue.on('next', () => {
-  console.log(
-    `Task is completed.  Size: ${replayQueue.size}  Pending: ${replayQueue.pending}`
-  );
+  // console.log(
+  //   `Task is completed.  Size: ${replayQueue.size}  Pending: ${replayQueue.pending}`
+  // );
 });
 
 replayQueue.on('idle', () => {
-  console.log(
-    `Queue idle.  Size: ${replayQueue.size}  Pending: ${replayQueue.pending}`
-  );
+  // console.log(
+  //   `Queue idle.  Size: ${replayQueue.size}  Pending: ${replayQueue.pending}`
+  // );
 });
 
 export default class Player {
@@ -80,40 +79,38 @@ export default class Player {
   }
 
   public async moveTo(position: number) {
-    console.log('position: ', position);
-    const visibleEditor = vscode.window.visibleTextEditors[0];
-    if (!visibleEditor) {
-      return;
-    }
+    this._currentBuffer = <buffers.Frame>buffers.get(position);
+    const editor = await getEditor(
+      this._currentWorkspaceFolder,
+      this._currentBuffer.document.relative
+    );
 
-    this._currentBuffer = buffers.get(position);
-    console.log('current buffer: ', this._currentBuffer);
     // cast currentBuffer to Frame variable
+    const currentBuffer = this._currentBuffer;
 
-    const currentBuffer = <buffers.Frame>this._currentBuffer;
+    await this.replaceContentOf(editor, currentBuffer.editorContent);
 
-    if (!currentBuffer) {
-      return;
-    }
+    this.updateStatus(PAUSED);
+  }
 
-    await visibleEditor.edit((edit) => {
+  private async replaceContentOf(editor: vscode.TextEditor, content: string) {
+    await editor.edit((edit) => {
       // update initial file content
-      const l = visibleEditor.document.lineCount;
+      const l = editor.document.lineCount;
       const range = new vscode.Range(
         new vscode.Position(0, 0),
         new vscode.Position(
           l,
           Math.max(
             0,
-            visibleEditor.document.lineAt(Math.max(0, l - 1)).text.length - 1
+            editor.document.lineAt(Math.max(0, l - 1)).text.length - 1
           )
         )
       );
 
       edit.delete(range);
-      edit.insert(new vscode.Position(0, 0), currentBuffer.editorContent);
+      edit.insert(new vscode.Position(0, 0), content);
     });
-    this.updateStatus(PAUSED);
   }
 
   public restart() {
@@ -175,13 +172,14 @@ export default class Player {
     );
 
     if (!workspacePicked) {
-      console.log('no workspace selected');
+      vscode.window.showWarningMessage('No workspace folder selected');
       return;
     }
 
     vscode.window.showInformationMessage(
       'Selected workspace: ' + workspacePicked
     );
+
     this._currentWorkspaceFolder = workspacePicked;
 
     this.updateStatus(PLAYING);
@@ -190,24 +188,20 @@ export default class Player {
       buffers.inject(macro.buffers);
 
       this._currentBuffer = buffers.get(0);
-      if (!this._currentBuffer) {
-        vscode.window.showErrorMessage('No active recording');
-        return;
-      }
 
       if (buffers.isStartingPoint(this._currentBuffer)) {
         await this.setStartingPoint(this._currentBuffer);
       }
 
       vscode.window.showInformationMessage(
-        `Now playing ${buffers.count()} buffers from ${macro.name}!`
+        `Playing ${buffers.count()} actions from ${macro.name} macro!`
       );
     }
 
     this.autoPlay();
 
     vscode.window.showInformationMessage(
-      `Now playing ${buffers.count()} buffers from ${this._currentMacroName}!`
+      `Playing ${buffers.count()} actions from ${this._currentMacroName} macro!`
     );
   }
 
@@ -226,12 +220,10 @@ export default class Player {
   }
 
   private processBuffer() {
-    console.log('adding to queue');
     return replayQueue.add(
       () =>
         new Promise((resolve, reject) => {
           try {
-            console.log('before advancing buffer');
             this.advanceBuffer(resolve, 'remove this text');
           } catch (e) {
             console.log(e);
@@ -242,40 +234,22 @@ export default class Player {
   }
 
   private async setStartingPoint(startingPoint: buffers.StartingPoint) {
-    vscode.window.showInformationMessage('opening new window');
     const editor = await getEditor(
       this._currentWorkspaceFolder,
       startingPoint.document.relative
     );
 
-    const existingEditor = editor;
-    await existingEditor.edit((edit) => {
-      // update initial file content
-      const l = existingEditor.document.lineCount;
-      const range = new vscode.Range(
-        new vscode.Position(0, 0),
-        new vscode.Position(
-          l,
-          Math.max(
-            0,
-            existingEditor.document.lineAt(Math.max(0, l - 1)).text.length - 1
-          )
-        )
-      );
-
-      edit.delete(range);
-      edit.insert(new vscode.Position(0, 0), startingPoint.editorContent);
-    });
+    await this.replaceContentOf(editor, startingPoint.editorContent);
 
     if (editor) {
       this.updateSelections(startingPoint.selections, editor);
 
       // language should always be defined, guard statement here
       // to support old recorded frames before language bit was added
-      if (startingPoint.language) {
-        // @TODO set editor language once the API becomes available:
-        // https://github.com/Microsoft/vscode/issues/1800
-      }
+      //if (startingPoint.language) {
+      // @TODO set editor language once the API becomes available:
+      // https://github.com/Microsoft/vscode/issues/1800
+      //}
     }
 
     // move to next frame
@@ -313,13 +287,20 @@ export default class Player {
       return done();
     }
 
-    console.log('----->buffer: ', buffer);
     const { changes, selections } = <buffers.Frame>buffer;
 
     const editor = await getEditor(
       this._currentWorkspaceFolder,
       buffer.document.relative
     );
+
+    const prevBuffer = <buffers.Frame>buffers.get(buffer.position - 1);
+    if (
+      prevBuffer &&
+      prevBuffer.document.uri.fsPath !== buffer.document.uri.fsPath
+    ) {
+      await this.replaceContentOf(editor, buffer.editorContent);
+    }
 
     const updateSelectionAndAdvanceToNextBuffer = () => {
       if (selections.length) {
@@ -329,7 +310,6 @@ export default class Player {
 
       // Ran out of buffers? Disable type capture.
       if (buffers.count() - 1 == buffer.position) {
-        console.log('finished');
         this.finished();
       } else {
         this._currentBuffer = buffers.get(buffer.position + 1);
@@ -337,7 +317,6 @@ export default class Player {
 
       done();
     };
-    changes && console.log('changes: ', changes.length);
 
     if (changes && changes.length > 0) {
       editor
@@ -352,7 +331,6 @@ export default class Player {
     changes: vscode.TextDocumentContentChangeEvent[],
     edit: vscode.TextEditorEdit
   ) {
-    console.log('applyContentChanges');
     changes.forEach((change) => this.applyContentChange(change, edit));
   }
 

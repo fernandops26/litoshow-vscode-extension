@@ -49,6 +49,10 @@ export function isStartingPoint(buffer: Buffer): buffer is StartingPoint {
   return (<StartingPoint>buffer).type === BufferTypes.Starting;
 }
 
+export function isChange(buffer: Buffer): buffer is Frame {
+  return (<StartingPoint>buffer).type === BufferTypes.Change;
+}
+
 export function isStopPoint(buffer: Buffer): buffer is StopPoint {
   return (<StopPoint>buffer).type === BufferTypes.Stop;
 }
@@ -57,7 +61,7 @@ export function all() {
   return buffers;
 }
 
-export function get(position: number) {
+export function get(position: number): Buffer {
   return buffers[position];
 }
 

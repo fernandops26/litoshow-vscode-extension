@@ -46,7 +46,7 @@ export class MacroWebview {
     const panel = vscode.window.createWebviewPanel(
       MacroWebview.viewType,
       macroTitle,
-      column || vscode.ViewColumn.Two,
+      column || vscode.ViewColumn.Three,
       {
         // Enable javascript in the webview
         enableScripts: true,
