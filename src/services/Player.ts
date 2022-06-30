@@ -153,13 +153,11 @@ export default class Player {
     const items = this._storage.list();
 
     if (!this._currentMacroName) {
-      console.log('no current macro name');
       const picked = await vscode.window.showQuickPick(
         items.map((item) => item.name)
       );
 
       if (!picked) {
-        console.log('no macro picked');
         return;
       }
 
@@ -300,6 +298,13 @@ export default class Player {
       prevBuffer.document.uri.fsPath !== buffer.document.uri.fsPath
     ) {
       await this.replaceContentOf(editor, buffer.editorContent);
+    } else {
+      if (
+        prevBuffer &&
+        prevBuffer.editorContent !== editor.document.getText()
+      ) {
+        await this.replaceContentOf(editor, prevBuffer.editorContent);
+      }
     }
 
     const updateSelectionAndAdvanceToNextBuffer = () => {

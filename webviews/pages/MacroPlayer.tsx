@@ -75,7 +75,7 @@ export default function MacroView() {
     let button = <></>;
     if (status.status == 'playing') {
       button = (
-        <div className='play text-center text-white'>
+        <div className='play text-center '>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPause}
@@ -88,7 +88,7 @@ export default function MacroView() {
 
     if (status.status == 'paused') {
       button = (
-        <div className='play text-center text-white'>
+        <div className='play text-center '>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPlay}
@@ -101,7 +101,7 @@ export default function MacroView() {
 
     if (status.status == 'stopped') {
       button = (
-        <div className='play text-center text-white'>
+        <div className='play text-center '>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickRestart}
@@ -117,10 +117,10 @@ export default function MacroView() {
 
   return (
     <div className='p-4'>
-      <div className='bg-vscode-editor-foreground rounded shadow text-gray-700'>
+      <div className=' bg-white rounded shadow text-gray-700'>
         <div className='flex items-center p-2'>
           {renderMainButton()}
-          <div className='px-4 w-full'>
+          <div className=' px-4 w-full'>
             <Slider
               min={0}
               max={status.total}

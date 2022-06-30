@@ -14,6 +14,7 @@
     "onCommand:newlitoshow.createMacro",
     "onCommand:newlitoshow.saveMacro",
     "onCommand:newlitoshow.refreshMacro",
+    "onCommand:litoshow.playMacro",
     "onCommand:litoshow.selectMacro",
     "onCommand:litoshow.removeMacro",
     "onCommand:newlitoshow.viewPlayer",

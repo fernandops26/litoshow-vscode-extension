@@ -71,7 +71,6 @@ export function inject(_buffers: Buffer[]) {
 }
 
 export function insert(buffer: Buffer) {
-  console.log('pushing: ', buffer);
   buffers.push(buffer);
 }
 

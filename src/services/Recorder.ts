@@ -43,7 +43,6 @@ export default class Recorder {
   }
 
   constructor(storage: Storage) {
-    console.log('constructor here');
     this._storage = storage;
 
     let subscriptions: vscode.Disposable[] = [];
@@ -177,7 +176,6 @@ export default class Recorder {
       ...this._activeMacro,
       buffers: buffers.all(),
     });
-    console.log('stored macro: ', storedMacro);
 
     vscode.window.showInformationMessage(
       `Saved ${storedMacro.buffers.length} buffers under "${storedMacro.name}".`
@@ -194,7 +192,6 @@ export default class Recorder {
     if (!this._activeMacro) {
       return;
     }
-    console.log('on did change text document: ', e);
     // @TODO: Gets called while playing -- need to stop recording once over
 
     // store changes, selection change will commit
@@ -212,7 +209,6 @@ export default class Recorder {
     // Only allow recording to one active editor at a time
     // Breaks when you leave but that's fine for now.
 
-    console.log('ee: ', e);
     if (!this._activeMacro) {
       return;
     }
@@ -220,19 +216,11 @@ export default class Recorder {
     const textEditor = e.textEditor;
 
     const changes = this._currentChanges;
-    console.log('current changes: ', changes);
     const editorSelections = (e.selections || []).map(
       (item) => item as Mutable<vscode.Selection>
     );
     const selections = editorSelections;
     this._currentChanges = [];
-
-    /*console.log(textEditor.document.uri);
-    console.log('relative: ', getRelativeFilePath(textEditor.document.uri.fsPath));
-    console.log(
-      'filename: ',
-      path.relative(process.cwd(), textEditor.document.fileName)
-    );*/
 
     buffers.insert({
       document: {
@@ -248,7 +236,6 @@ export default class Recorder {
   }
 
   dispose() {
-    console.log('disposing recorder', this._disposable);
     if (this._disposable) {
       this._disposable.dispose();
     }
