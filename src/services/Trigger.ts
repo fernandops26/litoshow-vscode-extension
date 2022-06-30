@@ -25,7 +25,7 @@ export default class Trigger {
       this
     );
 
-    this._disposable = vscode.Disposable.from();
+    this._disposable = vscode.Disposable.from(updateList);
   }
 
   updateClientList() {

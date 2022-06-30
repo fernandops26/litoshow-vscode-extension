@@ -8,17 +8,20 @@ import Trigger from './services/Trigger';
 import Player from './services/Player';
 import { MacroWebview } from './vsProviders/MacroWebview';
 import Storage from './repositories/MacroRepository';
+import MacroStatusBar from './vsProviders/MacroStatusBar';
 
 export function activate(context: vscode.ExtensionContext) {
   const eventEmitter = new EventEmitter();
   const macroRepository = Storage.getInstance(context);
 
   let record = vscode.commands.registerCommand(
-    'newlitoshow.createMacro',
+    'litoshow.createMacro',
     Recorder.register(context)
   );
 
   Trigger.register(context, eventEmitter);
+
+  const statusBar = MacroStatusBar.register(context)
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
@@ -31,11 +34,38 @@ export function activate(context: vscode.ExtensionContext) {
 
   let select = vscode.commands.registerCommand(
     'litoshow.selectMacro',
-    (data) => {
-      player.select(data.id);
-      MacroWebview.createOrShow(context.extensionUri, eventEmitter, data.id);
+    async (data) => {
+
+      let id = data?.id;
+      if (id === undefined) {
+        const items = macroRepository.list();
+        const picked = await vscode.window.showQuickPick(
+          items.map((item) => item.name)
+        );
+
+        if (!picked) {
+          vscode.window.showWarningMessage('No macro selected');
+          return;
+        }
+
+        id = picked
+      }
+
+      player.select(id);
+      statusBar.updateMacroName(id);
+
+      if (MacroWebview.currentPanel) {
+        await vscode.commands.executeCommand('litoshow.openView');
+      }
     }
   );
+
+  let openView = vscode.commands.registerCommand('litoshow.openView', () => {
+    const macroId = player.getMacroId()
+    if (macroId) {
+      MacroWebview.createOrShow(context.extensionUri, eventEmitter, macroId);
+    }
+  })
 
   let remove = vscode.commands.registerCommand(
     'litoshow.removeMacro',
@@ -44,17 +74,27 @@ export function activate(context: vscode.ExtensionContext) {
       // @todo dispose player if macro is selected
       await macroRepository.remove(data.id);
       await vscode.commands.executeCommand('litoshow.updateClientList');
+      // remove macro view if selected has been removed -> MacroWebview.kill()
+      // deselect if selected has been removed
     }
   );
 
-  let deselect = vscode.commands.registerCommand(
-    'litoshow.deselectMacro',
-    () => {
-      player.deselect();
-    }
-  );
+  let newPlay = vscode.commands.registerCommand('litoshow.playMacro', async () => {
+    if (!player.isSelectedMacroName()) {
+        const items = macroRepository.list();
+        const picked = await vscode.window.showQuickPick(
+          items.map((item) => item.name)
+        , { title: 'Select macro to play.' });
 
-  let newPlay = vscode.commands.registerCommand('litoshow.playMacro', () => {
+        if (!picked) {
+          vscode.window.showWarningMessage('No macro selected');
+          return;
+        }
+
+        player.select(picked);
+        statusBar.updateMacroName(picked);
+    }
+
     player.start();
   });
 
@@ -75,11 +115,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   //let type = vscode.commands.registerCommand('type', Replay.onType);
   context.subscriptions.push(
+    openView,
     remove,
     record,
     newPlay,
     select,
-    deselect,
     restart,
     movePosition,
     pause

@@ -73,7 +73,7 @@ export default class Recorder {
     );
 
     const save = vscode.commands.registerCommand(
-      'newlitoshow.saveMacro',
+      'litoshow.saveMacro',
       async () => this.saveRecording(save)
     );
 
@@ -81,7 +81,6 @@ export default class Recorder {
     //this._textEditor = vscode.window.activeTextEditor;
     this._disposable = vscode.Disposable.from(
       ...subscriptions,
-      //createMacro,
       insertNamedStop,
       insertStop,
       save

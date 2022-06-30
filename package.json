@@ -11,8 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:newlitoshow.testStatus",
-    "onCommand:newlitoshow.createMacro",
-    "onCommand:newlitoshow.saveMacro",
+    "onCommand:litoshow.createMacro",
+    "onCommand:litoshow.saveMacro",
     "onCommand:newlitoshow.refreshMacro",
     "onCommand:litoshow.playMacro",
     "onCommand:litoshow.selectMacro",
@@ -88,12 +88,12 @@
         "title": "Refresh Webviews"
       },
       {
-        "command": "newlitoshow.createMacro",
+        "command": "litoshow.createMacro",
         "category": "Litoshow",
         "title": "Create Macro"
       },
       {
-        "command": "newlitoshow.saveMacro",
+        "command": "litoshow.saveMacro",
         "category": "Litoshow",
         "title": "Save Macro"
       },
@@ -110,14 +110,9 @@
         "icon": "media/refresh.svg"
       },
       {
-        "command": "litoshow.deselectMacro",
-        "category": "Litoshow",
-        "title": "Deselect Macro"
-      },
-      {
         "command": "litoshow.selectMacro",
         "category": "Litoshow",
-        "title": "Select",
+        "title": "Choose Macro",
         "icon": "media/play.svg"
       },
       {

@@ -45,6 +45,7 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
           await vscode.commands.executeCommand('litoshow.selectMacro', {
             id: data.data.macroId,
           });
+          await vscode.commands.executeCommand('litoshow.openView');
           break;
         }
         case 'removeMacro': {

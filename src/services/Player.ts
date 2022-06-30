@@ -78,6 +78,14 @@ export default class Player {
     }
   }
 
+  public isSelectedMacroName(): boolean {
+    return this._currentMacroName !== undefined;
+  }
+
+  public getMacroId(): string | undefined {
+    return this._currentMacroName;
+  }
+
   public async moveTo(position: number) {
     this._currentBuffer = <buffers.Frame>buffers.get(position);
     const editor = await getEditor(
@@ -115,7 +123,6 @@ export default class Player {
 
   public restart() {
     this._currentBuffer = undefined;
-    // replayQueue.start();
     this.start();
   }
 
@@ -150,21 +157,6 @@ export default class Player {
   }
 
   public async start() {
-    const items = this._storage.list();
-
-    if (!this._currentMacroName) {
-      const picked = await vscode.window.showQuickPick(
-        items.map((item) => item.name)
-      );
-
-      if (!picked) {
-        return;
-      }
-
-      const macro = this._storage.getByName(picked);
-      this._currentMacroName = macro.name;
-    }
-
     const workspacePicked = await vscode.window.showQuickPick(
       (vscode.workspace.workspaceFolders || []).map((item) => item.uri.fsPath)
     );
@@ -182,7 +174,7 @@ export default class Player {
 
     this.updateStatus(PLAYING);
     if (!this._currentBuffer) {
-      const macro = this._storage.getByName(this._currentMacroName);
+      const macro = this._storage.getByName(this._currentMacroName ?? '');
       buffers.inject(macro.buffers);
 
       this._currentBuffer = buffers.get(0);
