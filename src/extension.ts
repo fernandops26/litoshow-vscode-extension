@@ -40,19 +40,21 @@ export function activate(context: vscode.ExtensionContext) {
       if (id === undefined) {
         const items = macroRepository.list();
         const picked = await vscode.window.showQuickPick(
-          items.map((item) => item.name)
+          items.map((item) => ({id: item.id, label: item.name}))
         );
 
-        if (!picked) {
+        if (!picked || !picked.id) {
           vscode.window.showWarningMessage('No macro selected');
           return;
         }
 
-        id = picked
+        id = picked.id
       }
 
       player.select(id);
-      statusBar.updateMacroName(id);
+
+      const macroSelected = player.getSelectedMacro()
+      statusBar.updateMacroName(macroSelected?.name ?? '');
 
       if (MacroWebview.currentPanel) {
         await vscode.commands.executeCommand('litoshow.openView');
@@ -61,9 +63,10 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   let openView = vscode.commands.registerCommand('litoshow.openView', () => {
-    const macroId = player.getMacroId()
-    if (macroId) {
-      MacroWebview.createOrShow(context.extensionUri, eventEmitter, macroId);
+    const macro = player.getSelectedMacro()
+    if (macro) {
+      MacroWebview.kill();
+      MacroWebview.createOrShow(context.extensionUri, eventEmitter, macro.name);
     }
   })
 
@@ -83,16 +86,16 @@ export function activate(context: vscode.ExtensionContext) {
     if (!player.isSelectedMacroName()) {
         const items = macroRepository.list();
         const picked = await vscode.window.showQuickPick(
-          items.map((item) => item.name)
-        , { title: 'Select macro to play.' });
+          items.map((item) => ({id: item.id, label: item.name}))
+        , { title: 'Choose a macro to play' });
 
         if (!picked) {
           vscode.window.showWarningMessage('No macro selected');
           return;
         }
 
-        player.select(picked);
-        statusBar.updateMacroName(picked);
+        player.select(picked.id);
+        statusBar.updateMacroName(picked.label);
     }
 
     player.start();

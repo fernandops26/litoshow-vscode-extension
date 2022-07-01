@@ -7,11 +7,12 @@ import { SerializedBuffer, rehydrateBuffer } from '../utils/rehydrate';
 const MACROS = 'litoshow.macros';
 
 type Metadata = {
+  id: string;
   name: string;
   description: string;
 };
 
-type Macro = Metadata & {
+export type Macro = Metadata & {
   buffers: Buffer[];
 };
 
@@ -58,6 +59,18 @@ export default class MacroRepository {
     const all = this.list();
 
     const found = all.find((item) => item.name === name) as Macro;
+    const buffers: Array<any> = found.buffers;
+
+    return {
+      ...(found as Macro),
+      buffers: buffers.map(rehydrateBuffer) || [],
+    };
+  }
+
+  public getById(id: string): Macro {
+    const all = this.list();
+
+    const found = all.find((item) => item.id === id) as Macro;
     const buffers: Array<any> = found.buffers;
 
     return {

@@ -4,12 +4,14 @@ import * as vscode from 'vscode';
 import * as buffers from './BufferManager';
 import Storage from '../repositories/MacroRepository';
 import { getRelativeFilePath } from '../utils/filePathInfo';
+import { v4 as uuidV4 } from 'uuid';
 
 type Mutable<Type> = {
   -readonly [Key in keyof Type]: Type[Key];
 };
 
 type Metadata = {
+  id: string;
   name: string;
   description: string;
 };
@@ -26,7 +28,6 @@ enum BufferTypes {
 
 export default class Recorder {
   private _disposable: vscode.Disposable;
-  private _textEditor: vscode.TextEditor | undefined;
   private _buffers = 0;
   private _currentChanges: vscode.TextDocumentContentChangeEvent[] = [];
   private _storage: Storage;
@@ -106,6 +107,7 @@ export default class Recorder {
     }
 
     this._activeMacro = {
+      id: uuidV4(),
       name: macroName,
       description: '',
       buffers: [],
@@ -177,7 +179,7 @@ export default class Recorder {
     });
 
     vscode.window.showInformationMessage(
-      `Saved ${storedMacro.buffers.length} buffers under "${storedMacro.name}".`
+      `Saved macro: "${storedMacro.name}".`
     );
 
     this._activeMacro = undefined;

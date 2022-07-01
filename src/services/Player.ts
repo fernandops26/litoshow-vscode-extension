@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as buffers from './BufferManager';
-import Storage from '../repositories/MacroRepository';
+import Storage, { Macro } from '../repositories/MacroRepository';
 import PQueue from 'p-queue';
 import { EventEmitter } from 'stream';
 import { getEditor } from '../utils/editorResolver';
@@ -49,10 +49,10 @@ export default class Player {
   private static _instance: Player;
   private _storage: Storage;
   private _status: string = PAUSED;
-  private _currentMacroName: string | undefined;
   private _currentBuffer: buffers.Buffer | undefined;
   private _eventEmitter: EventEmitter;
   private _currentWorkspaceFolder: string | undefined;
+  private _currentMacro: Macro | undefined;
 
   public static register(
     context: vscode.ExtensionContext,
@@ -70,24 +70,27 @@ export default class Player {
     this._eventEmitter = eventEmitter;
   }
 
-  public select(name: string) {
+  public select(id: string) {
     this.updateStatus(PAUSED);
 
-    if (name !== this._currentMacroName) {
-      this._currentMacroName = name;
-      const macro = this._storage.getByName(this._currentMacroName ?? '');
+    if (id !== this._currentMacro?.id) {
+      const macro = this._storage.getById(id);
+      this._currentMacro = macro;
       buffers.inject(macro.buffers);
-
       this._currentBuffer = buffers.get(0);
     }
   }
 
   public isSelectedMacroName(): boolean {
-    return this._currentMacroName !== undefined;
+    return this._currentMacro !== undefined;
+  }
+
+  public getSelectedMacro(): Macro | undefined {
+    return this._currentMacro;
   }
 
   public getMacroId(): string | undefined {
-    return this._currentMacroName;
+    return this._currentMacro?.id;
   }
 
   public async moveTo(position: number) {
@@ -167,14 +170,10 @@ export default class Player {
       (vscode.workspace.workspaceFolders || []).map((item) => item.uri.fsPath)
     );
 
-    if (!workspacePicked) {
+    if (workspacePicked === undefined) {
       vscode.window.showWarningMessage('No workspace folder selected');
       return;
     }
-
-    vscode.window.showInformationMessage(
-      'Selected workspace: ' + workspacePicked
-    );
 
     this._currentWorkspaceFolder = workspacePicked;
 
@@ -183,16 +182,12 @@ export default class Player {
       if (buffers.isStartingPoint(this._currentBuffer)) {
         await this.setStartingPoint(this._currentBuffer);
       }
-
-      vscode.window.showInformationMessage(
-        `Playing ${buffers.count()} actions from ${this._currentMacroName} macro!`
-      );
     }
 
     this.autoPlay();
 
     vscode.window.showInformationMessage(
-      `Playing ${buffers.count()} actions from ${this._currentMacroName} macro!`
+      `Playing now: ${this._currentMacro?.name}`
     );
   }
 

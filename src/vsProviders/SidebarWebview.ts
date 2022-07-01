@@ -41,7 +41,6 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
           break;
         }
         case 'selectMacro': {
-          console.log('select: ', data);
           await vscode.commands.executeCommand('litoshow.selectMacro', {
             id: data.data.macroId,
           });
@@ -49,7 +48,6 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
           break;
         }
         case 'removeMacro': {
-          console.log('remove: ', data);
           await vscode.commands.executeCommand('litoshow.removeMacro', {
             id: data.data.macroId,
           });
