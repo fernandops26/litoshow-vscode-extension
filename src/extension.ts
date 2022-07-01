@@ -113,6 +113,10 @@ export function activate(context: vscode.ExtensionContext) {
     player.pause();
   });
 
+  let resume = vscode.commands.registerCommand('litoshow.resumeMacro', () => {
+    player.resume();
+  });
+
   //let type = vscode.commands.registerCommand('type', Replay.onType);
   context.subscriptions.push(
     openView,
@@ -122,7 +126,8 @@ export function activate(context: vscode.ExtensionContext) {
     select,
     restart,
     movePosition,
-    pause
+    pause,
+    resume
   );
 }
 export function deactivate() {}

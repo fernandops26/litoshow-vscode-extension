@@ -75,6 +75,10 @@ export default class Player {
 
     if (name !== this._currentMacroName) {
       this._currentMacroName = name;
+      const macro = this._storage.getByName(this._currentMacroName ?? '');
+      buffers.inject(macro.buffers);
+
+      this._currentBuffer = buffers.get(0);
     }
   }
 
@@ -122,7 +126,7 @@ export default class Player {
   }
 
   public restart() {
-    this._currentBuffer = undefined;
+    this._currentBuffer = buffers.get(0);
     this.start();
   }
 
@@ -144,16 +148,18 @@ export default class Player {
     });
   }
 
-  public deselect() {
-    this._currentMacroName = undefined;
-    this._currentBuffer = undefined;
-    this.updateStatus(PAUSED);
-  }
-
   private async finished() {
     this.updateStatus(STOPPED);
     this._currentBuffer = undefined;
     await vscode.window.showInformationMessage('Macro finished');
+  }
+
+  public async resume() {
+    if (!this._currentBuffer) {
+      vscode.window.showWarningMessage('No active macro to resume.')
+    }
+    this.updateStatus(PLAYING);
+    this.autoPlay();
   }
 
   public async start() {
@@ -173,18 +179,13 @@ export default class Player {
     this._currentWorkspaceFolder = workspacePicked;
 
     this.updateStatus(PLAYING);
-    if (!this._currentBuffer) {
-      const macro = this._storage.getByName(this._currentMacroName ?? '');
-      buffers.inject(macro.buffers);
-
-      this._currentBuffer = buffers.get(0);
-
+    if (this._currentBuffer?.position === 0) {
       if (buffers.isStartingPoint(this._currentBuffer)) {
         await this.setStartingPoint(this._currentBuffer);
       }
 
       vscode.window.showInformationMessage(
-        `Playing ${buffers.count()} actions from ${macro.name} macro!`
+        `Playing ${buffers.count()} actions from ${this._currentMacroName} macro!`
       );
     }
 

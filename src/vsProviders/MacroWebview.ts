@@ -170,6 +170,10 @@ export class MacroWebview {
             vscode.commands.executeCommand('litoshow.pauseMacro');
             break;
           }
+          case 'resume': {
+            vscode.commands.executeCommand('litoshow.resumeMacro');
+            break;
+          }
           case 'play': {
             vscode.commands.executeCommand('litoshow.playMacro');
             break;

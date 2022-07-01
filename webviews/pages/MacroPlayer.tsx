@@ -16,7 +16,7 @@ export default function MacroView() {
   const [status, setStatus] = useState<StatusUpdate>({
     total: 100,
     current: 0,
-    status: 'paused',
+    status: 'no-initiated',
     percent: 0,
   });
 
@@ -71,8 +71,29 @@ export default function MacroView() {
     });
   };
 
+
+  const onClickResume = () => {
+    tsvscode.postMessage({
+      type: 'resume',
+      value: null,
+    });
+  };
+
   const renderMainButton = () => {
     let button = <></>;
+    if (status.status == 'no-initiated') {
+      button = (
+        <div className='play text-center '>
+          <div
+            className='p-1 shadow rounded-full m-auto cursor-pointer'
+            onClick={onClickPlay}
+          >
+            <PlayIcon className='w-6 h-6' />
+          </div>
+        </div>
+      );
+    }
+
     if (status.status == 'playing') {
       button = (
         <div className='play text-center '>
@@ -91,7 +112,7 @@ export default function MacroView() {
         <div className='play text-center '>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
-            onClick={onClickPlay}
+            onClick={onClickResume}
           >
             <PlayIcon className='w-6 h-6' />
           </div>

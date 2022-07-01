@@ -126,11 +126,6 @@
         "title": "Restart Macro"
       },
       {
-        "command": "litoshow.moveMacroPosition",
-        "category": "Litoshow",
-        "title": "Move Macro Position"
-      },
-      {
         "command": "litoshow.pauseMacro",
         "category": "Litoshow",
         "title": "Pause Macro"
