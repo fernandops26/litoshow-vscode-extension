@@ -95,7 +95,6 @@ export default class MacroRepository {
     const operations = [this._macros.setValue(MACROS, list)];
 
     return Promise.all(operations).then(() => {
-      console.log('saving: ', macro);
       return macro;
     });
   }

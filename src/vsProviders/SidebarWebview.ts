@@ -11,7 +11,6 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
     private readonly _eventEmitter: EventEmitter
   ) {
     this._eventEmitter.on('client:updateMacroList', (data) => {
-      console.log('data received: ', data);
       this._view?.webview.postMessage({
         type: 'updateMacroList',
         value: data,

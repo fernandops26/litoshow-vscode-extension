@@ -15,6 +15,7 @@ const replayQueue = new PQueue({
 
 let count = 0;
 
+const NO_INITIATED: string = 'no-initiated';
 const PLAYING: string = 'playing';
 const STOPPED: string = 'stopped';
 const PAUSED: string = 'paused';
@@ -71,14 +72,17 @@ export default class Player {
   }
 
   public select(id: string) {
-    this.updateStatus(PAUSED);
 
     if (id !== this._currentMacro?.id) {
       const macro = this._storage.getById(id);
       this._currentMacro = macro;
       buffers.inject(macro.buffers);
       this._currentBuffer = buffers.get(0);
+      this.updateStatus(NO_INITIATED);
+      return
     }
+
+    this.updateStatus(PAUSED);
   }
 
   public isSelectedMacroName(): boolean {
@@ -138,7 +142,7 @@ export default class Player {
 
   public async pause() {
     this.updateStatus(PAUSED);
-    await vscode.window.showInformationMessage('Macro paused');
+    await vscode.window.showInformationMessage('🧘 Macro paused');
   }
 
   private updateStatus(status: string) {
@@ -157,7 +161,7 @@ export default class Player {
   private async finished() {
     this.updateStatus(STOPPED);
     this._currentBuffer = undefined;
-    await vscode.window.showInformationMessage('Macro finished');
+    await vscode.window.showInformationMessage('🙌 Macro finished');
   }
 
   public async resume() {
@@ -190,7 +194,7 @@ export default class Player {
     this.autoPlay();
 
     vscode.window.showInformationMessage(
-      `Playing now: ${this._currentMacro?.name}`
+      `🚀 Playing: ${this._currentMacro?.name}`
     );
   }
 
@@ -215,7 +219,6 @@ export default class Player {
           try {
             this.advanceBuffer(resolve, 'remove this text');
           } catch (e) {
-            console.log(e);
             reject(e);
           }
         })

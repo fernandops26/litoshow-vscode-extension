@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   Trigger.register(context, eventEmitter);
 
-  const statusBar = MacroStatusBar.register(context)
+  const statusBar = MacroStatusBar.register(context, eventEmitter)
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(

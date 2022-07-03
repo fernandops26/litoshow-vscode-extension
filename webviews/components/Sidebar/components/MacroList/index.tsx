@@ -13,7 +13,6 @@ export default function MacroList() {
   }, []);
 
   const onMessage = ({ data }: MessageEvent) => {
-    console.log('message here', data);
     if (data.type == 'updateMacroList') {
       setList(data.value.macros);
     }

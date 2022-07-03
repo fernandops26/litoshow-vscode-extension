@@ -29,7 +29,6 @@ export default class Trigger {
   }
 
   updateClientList() {
-    console.log('update client list');
     this._eventEmitter.emit('client:updateMacroList', {
       macros: this._storage.list(),
     });
