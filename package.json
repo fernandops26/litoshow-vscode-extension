@@ -17,6 +17,7 @@
     "onCommand:litoshow.playMacro",
     "onCommand:litoshow.selectMacro",
     "onCommand:litoshow.removeMacro",
+    "onCommand:litoshow.insertStop",
     "onCommand:newlitoshow.viewPlayer",
     "onView:litoshow-sidebar",
     "onView:litoshow-tree"
@@ -144,6 +145,11 @@
         "command": "litoshow.updateClientList",
         "category": "Litoshow",
         "title": "Update Client List"
+      },
+      {
+        "command": "litoshow.insertStop",
+        "category": "Litoshow",
+        "title": "Insert Stop"
       }
     ]
   },

@@ -61,16 +61,9 @@ export default class Recorder {
     );
 
     const insertNamedStop = vscode.commands.registerCommand(
-      'litoshow.experiment.insertNamedStop',
+      'litoshow.insertStop',
       this.insertNamedStop,
       this
-    );
-
-    const insertStop = vscode.commands.registerCommand(
-      'litoshow.experiment.insertStop',
-      () => {
-        this.insertStop(null);
-      }
     );
 
     const save = vscode.commands.registerCommand(
@@ -78,12 +71,9 @@ export default class Recorder {
       async () => this.saveRecording(save)
     );
 
-    // Why?
-    //this._textEditor = vscode.window.activeTextEditor;
     this._disposable = vscode.Disposable.from(
       ...subscriptions,
       insertNamedStop,
-      insertStop,
       save
     );
 
@@ -145,21 +135,31 @@ export default class Recorder {
   }
 
   private insertNamedStop() {
+    if (!this._activeMacro) {
+      vscode.window.showWarningMessage('No active macro to create stop point.');
+      return;
+    }
+
     vscode.window
       .showInputBox({
         prompt: 'What do you want to call your stop point?',
-        placeHolder: 'Type a name or ENTER for unnamed stop point',
+        placeHolder: 'Type a name.',
       })
       .then((name) => {
-        this.insertStop(name || null);
+        if (!name) {
+          vscode.window.showInformationMessage('You should specify a name.');
+          return;
+        }
+
+        this.insertStop(name);
       });
   }
 
-  private insertStop(name: string | null) {
+  private insertStop(name: string) {
     buffers.insert({
       type: BufferTypes.Stop,
       stop: {
-        name: name || null,
+        name: name,
       },
       changes: [],
       selections: [],

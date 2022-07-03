@@ -1,6 +1,8 @@
 import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { getNonce } from '../getNonce';
+import { Macro } from '../repositories/MacroRepository';
+import { getStopList } from '../utils/getStopPointsList';
 
 interface EventListenerRegistered {
   event: string;
@@ -21,22 +23,24 @@ export class MacroWebview {
   private _eventEmitter: EventEmitter;
   private _disposables: vscode.Disposable[] = [];
   private _listeners: EventListenerRegistered[] = [];
+  private _activeMacro: Macro | undefined;
 
   public static createOrShow(
     extensionUri: vscode.Uri,
     eventEmitter: EventEmitter,
-    macroName: string
+    macro: Macro
   ) {
     const column = undefined; /*vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;*/
 
-    const macroTitle = 'Macro: ' + macroName;
+    const macroTitle = 'Macro: ' + macro.name;
 
     // If we already have a panel, show it.
     if (MacroWebview.currentPanel) {
       MacroWebview.currentPanel._panel.title = macroTitle;
       MacroWebview.currentPanel._panel.reveal(column);
+      MacroWebview.currentPanel._activeMacro = macro;
       MacroWebview.currentPanel._update();
 
       return;
@@ -62,7 +66,8 @@ export class MacroWebview {
     MacroWebview.currentPanel = new MacroWebview(
       panel,
       extensionUri,
-      eventEmitter
+      eventEmitter,
+      macro
     );
   }
 
@@ -74,20 +79,24 @@ export class MacroWebview {
   public static revive(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    eventEmitter: EventEmitter
+    eventEmitter: EventEmitter,
+    macro: Macro
   ) {
     MacroWebview.currentPanel = new MacroWebview(
       panel,
       extensionUri,
-      eventEmitter
+      eventEmitter,
+      macro
     );
   }
 
   private constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    eventEmitter: EventEmitter
+    eventEmitter: EventEmitter,
+    macro: Macro
   ) {
+    this._activeMacro = macro;
     this._panel = panel;
     this._extensionUri = extensionUri;
     this._eventEmitter = eventEmitter;
@@ -156,6 +165,15 @@ export class MacroWebview {
     webview.onDidReceiveMessage(
       async (data) => {
         switch (data.type) {
+          case 'getInitialInfo': {
+            this._panel?.webview.postMessage({
+              type: 'initial-info',
+              value: {
+                stops: getStopList(this._activeMacro),
+              },
+            });
+            break;
+          }
           case 'move-position': {
             vscode.commands.executeCommand('litoshow.moveMacroPosition', {
               position: data.value,

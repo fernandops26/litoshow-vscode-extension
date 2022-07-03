@@ -95,17 +95,20 @@ export default class Player {
 
   public async moveTo(position: number) {
     this._currentBuffer = <buffers.Frame>buffers.get(position);
+    let currentBuffer = this._currentBuffer;
+    this.updateStatus(PAUSED);
+
+    if (buffers.isStopPoint(currentBuffer)) {
+      this._currentBuffer = buffers.get(position + 1);
+      return
+    }
+
     const editor = await getEditor(
       this._currentWorkspaceFolder,
-      this._currentBuffer.document.relative
+      currentBuffer.document.relative
     );
 
-    // cast currentBuffer to Frame variable
-    const currentBuffer = this._currentBuffer;
-
     await this.replaceContentOf(editor, currentBuffer.editorContent);
-
-    this.updateStatus(PAUSED);
   }
 
   private async replaceContentOf(editor: vscode.TextEditor, content: string) {
@@ -266,9 +269,9 @@ export default class Player {
     }
 
     if (buffers.isStopPoint(buffer)) {
-      if (userInput === stopPointBreakChar) {
-        this._currentBuffer = buffers.get(buffer.position + 1);
-      }
+      this.updateStatus(PAUSED);
+      vscode.window.showInformationMessage(`🚩 ${buffer.stop.name}`);
+      this._currentBuffer = buffers.get(buffer.position + 1);
 
       return done();
     }
@@ -281,17 +284,14 @@ export default class Player {
     );
 
     const prevBuffer = <buffers.Frame>buffers.get(buffer.position - 1);
-    if (
-      prevBuffer &&
-      prevBuffer.document.uri.fsPath !== buffer.document.uri.fsPath
-    ) {
-      await this.replaceContentOf(editor, buffer.editorContent);
-    } else {
-      if (
-        prevBuffer &&
-        prevBuffer.editorContent !== editor.document.getText()
-      ) {
-        await this.replaceContentOf(editor, prevBuffer.editorContent);
+
+    if (prevBuffer && buffers.isChange(prevBuffer)) {
+      if (prevBuffer.document.uri.fsPath !== buffer.document.uri.fsPath) {
+        await this.replaceContentOf(editor, buffer.editorContent);
+      } else {
+        if (prevBuffer.editorContent !== editor.document.getText()) {
+          await this.replaceContentOf(editor, prevBuffer.editorContent);
+        }
       }
     }
 

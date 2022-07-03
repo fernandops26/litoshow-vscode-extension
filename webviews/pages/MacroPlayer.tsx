@@ -1,9 +1,10 @@
 import { render } from 'react-dom';
 import Button from '@components/Button';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { PlayIcon, RefreshIcon, PauseIcon } from '@heroicons/react/outline';
+import StopList from '@components/player/components/stopList/StopList';
 
 interface StatusUpdate {
   status: string;
@@ -20,6 +21,9 @@ export default function MacroView() {
     percent: 0,
   });
 
+  const [stopPoints, setStopPoints] = useState<{name: string, position:  number}[]>([]);
+  const [lastMatchedStopPointPosition, setLastMatchedStopPointPosition] = useState<number>(-1);
+
   useEffect(() => {
     window.addEventListener('message', onMessage);
   }, []);
@@ -28,7 +32,15 @@ export default function MacroView() {
     if (data.type == 'update-status') {
       onStatusChange(data.value);
     }
+
+    if (data.type == 'initial-info') {
+      onInitialInfo(data.value.stops);
+    }
   };
+
+  const onInitialInfo = (stopPoints: Array<{name: string, position: number}>) => {
+    setStopPoints(stopPoints);
+  }
 
   const onStatusChange = (status: any) => {
     setStatus({
@@ -36,6 +48,13 @@ export default function MacroView() {
       percent: Math.round((status.current / status.total) * 100),
     });
   };
+
+  const checkIfMatchWithStopPoint = (position: number) => {
+    const stopPoint = stopPoints.find(({ position: stopPointPosition }) => stopPointPosition === position);
+    if (stopPoint) {
+      setLastMatchedStopPointPosition(position);
+    }
+  }
 
   const onChange = (number: number | number[]) => {
     const current = Array.isArray(number) ? number[0] : number;
@@ -136,6 +155,30 @@ export default function MacroView() {
     return button;
   };
 
+  useEffect(() => {
+    tsvscode.postMessage({
+      type: 'getInitialInfo',
+      value: null,
+    });
+  }, [])
+
+  useEffect(() => {
+    checkIfMatchWithStopPoint(status.current);
+  }, [status.current])
+
+  const marks = useMemo(() => {
+    return stopPoints.reduce((acc, curr) => {
+      const defaultMark = {
+        [curr.position]: <></>,
+      }
+
+      return {
+        ...acc,
+        ...defaultMark
+      };
+    }, {});
+  }, [stopPoints]);
+
   return (
     <div className='p-4'>
       <div className=' bg-white rounded shadow text-gray-700'>
@@ -147,9 +190,13 @@ export default function MacroView() {
               max={status.total}
               value={status.current}
               onChange={onChange}
+              marks={marks}
             />
           </div>
         </div>
+      </div>
+      <div className="mt-2">
+        <StopList items={stopPoints} currentPoint={lastMatchedStopPointPosition} />
       </div>
     </div>
   );
