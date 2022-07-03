@@ -169,6 +169,7 @@ export class MacroWebview {
             this._panel?.webview.postMessage({
               type: 'initial-info',
               value: {
+                total: (this._activeMacro?.buffers.length ?? 1) - 1,
                 stops: getStopList(this._activeMacro),
               },
             });

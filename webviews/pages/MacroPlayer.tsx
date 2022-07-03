@@ -10,7 +10,6 @@ interface StatusUpdate {
   status: string;
   total: number;
   current: number;
-  percent: number;
 }
 
 export default function MacroView() {
@@ -18,7 +17,6 @@ export default function MacroView() {
     total: 100,
     current: 0,
     status: 'no-initiated',
-    percent: 0,
   });
 
   const [stopPoints, setStopPoints] = useState<{name: string, position:  number}[]>([]);
@@ -34,18 +32,21 @@ export default function MacroView() {
     }
 
     if (data.type == 'initial-info') {
-      onInitialInfo(data.value.stops);
+      onInitialInfo(data.value.total, data.value.stops);
     }
   };
 
-  const onInitialInfo = (stopPoints: Array<{name: string, position: number}>) => {
+  const onInitialInfo = (total: number, stopPoints: Array<{name: string, position: number}>) => {
+    setStatus({
+      ...status,
+      total,
+    })
     setStopPoints(stopPoints);
   }
 
   const onStatusChange = (status: any) => {
     setStatus({
       ...status,
-      percent: Math.round((status.current / status.total) * 100),
     });
   };
 
@@ -191,6 +192,7 @@ export default function MacroView() {
               value={status.current}
               onChange={onChange}
               marks={marks}
+              disabled={status.status == 'no-initiated'}
             />
           </div>
         </div>

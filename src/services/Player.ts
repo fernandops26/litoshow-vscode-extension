@@ -72,7 +72,6 @@ export default class Player {
   }
 
   public select(id: string) {
-
     if (id !== this._currentMacro?.id) {
       const macro = this._storage.getById(id);
       this._currentMacro = macro;
