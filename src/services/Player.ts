@@ -163,6 +163,10 @@ export default class Player {
     await vscode.window.showInformationMessage('🙌 Macro finished');
   }
 
+  public stopPoints(): buffers.StopPoint[] {
+    return buffers.getStopPoints();
+  }
+
   public async resume() {
     if (!this._currentBuffer) {
       vscode.window.showWarningMessage('No active macro to resume.')

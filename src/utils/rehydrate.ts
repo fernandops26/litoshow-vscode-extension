@@ -47,7 +47,7 @@ export interface SerializedStartingPoint {
 
 export interface SerializedStopPoint {
   type: BufferTypes.Stop;
-  stop: { name: string | null };
+  stop: { name: string };
   position: number;
 }
 
@@ -115,7 +115,7 @@ export function rehydrateBuffer(serialized: SerializedBuffer): buffers.Buffer {
       type: BufferTypes.Stop,
       position: serialized.position,
       stop: {
-        name: serialized.stop.name || null,
+        name: serialized.stop.name,
       },
     };
   }

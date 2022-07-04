@@ -30,57 +30,36 @@
           "id": "litoshow-sidebar-view",
           "title": "Lito Show",
           "icon": "media/litoshow-white.svg"
-        },
-        {
-          "id": "litoshow-step-tree",
-          "title": "Lito Show: Step tree",
-          "icon": "media/replay.svg"
         }
-      ]
+      ],
+      "panel": []
     },
     "views": {
       "litoshow-sidebar-view": [
         {
           "type": "webview",
           "id": "litoshow-sidebar",
-          "name": "Litoshow",
+          "name": "Macro List",
           "icon": "media/replay.svg",
           "contextualTitle": "Litoshow"
-        }
-      ],
-      "litoshow-step-tree": [
+        },
         {
-          "id": "litoshow-tree",
-          "name": "(Litoshow Tree)",
-          "icon": "media/replay.svg"
+          "type": "webview",
+          "id": "litoshow-macro-stop-points-webview",
+          "name": "Stop points",
+          "contextualTitle": "Litoshow"
         }
       ]
     },
     "menus": {
       "view/title": [
         {
-          "command": "newlitoshow.refreshMacro",
-          "when": "view == litoshow-tree",
-          "group": "navigation"
-        },
-        {
           "command": "newlitoshow.refreshAll",
           "when": "view == litoshow-sidebar",
           "group": "navigation"
         }
       ],
-      "view/item/context": [
-        {
-          "command": "litoshow.playMacro",
-          "group": "inline",
-          "when": "view == litoshow-tree"
-        },
-        {
-          "command": "litoshow.removeMacro",
-          "group": "inline",
-          "when": "view == litoshow-tree"
-        }
-      ]
+      "view/item/context": []
     },
     "commands": [
       {

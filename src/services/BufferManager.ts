@@ -31,7 +31,7 @@ export type StartingPoint = WithPosition &
 export type StopPoint = WithPosition &
   WithType & {
     stop: {
-      name: string | null;
+      name: string;
     };
   };
 
@@ -72,6 +72,10 @@ export function inject(_buffers: Buffer[]) {
 
 export function insert(buffer: Buffer) {
   buffers.push(buffer);
+}
+
+export function getStopPoints(): StopPoint[] {
+  return buffers.filter(isStopPoint);
 }
 
 export function clear() {

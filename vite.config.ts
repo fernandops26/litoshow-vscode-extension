@@ -24,6 +24,7 @@ export default defineConfig({
       input: {
         Sidebar: resolve(__dirname, 'webviews/pages/Sidebar.tsx'),
         MacroPlayer: resolve(__dirname, 'webviews/pages/MacroPlayer.tsx'),
+        StopPoints: resolve(__dirname, 'webviews/pages/StopPoints.tsx'),
         styles: resolve(__dirname, 'media/vscode.css'),
       },
       output: {

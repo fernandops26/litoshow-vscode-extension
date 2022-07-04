@@ -7,6 +7,7 @@ import Recorder from './services/Recorder';
 import Trigger from './services/Trigger';
 import Player from './services/Player';
 import { MacroWebview } from './vsProviders/MacroWebview';
+import { MacroStopPointsWebview } from './vsProviders/MacroStopPointsWebview';
 import Storage from './repositories/MacroRepository';
 import MacroStatusBar from './vsProviders/MacroStatusBar';
 
@@ -29,6 +30,8 @@ export function activate(context: vscode.ExtensionContext) {
       new SidebarWebview(context.extensionUri, eventEmitter)
     )
   );
+
+  const stopPointWebview = MacroStopPointsWebview.register(context, eventEmitter);
 
   const player = Player.register(context, eventEmitter);
 
@@ -54,6 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
       player.select(id);
 
       const macroSelected = player.getSelectedMacro()
+      stopPointWebview.updateStopPointList(player.stopPoints())
       statusBar.updateMacroName(macroSelected?.name ?? '');
 
       if (MacroWebview.currentPanel) {
