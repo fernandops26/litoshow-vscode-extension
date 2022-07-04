@@ -1,10 +1,8 @@
 import { render } from 'react-dom';
-import Button from '@components/Button';
 import { useEffect, useMemo, useState } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { PlayIcon, RefreshIcon, PauseIcon } from '@heroicons/react/outline';
-import StopList from '@components/player/components/stopList/StopList';
 
 interface StatusUpdate {
   status: string;
@@ -20,7 +18,6 @@ export default function MacroView() {
   });
 
   const [stopPoints, setStopPoints] = useState<{name: string, position:  number}[]>([]);
-  const [lastMatchedStopPointPosition, setLastMatchedStopPointPosition] = useState<number>(-1);
 
   useEffect(() => {
     window.addEventListener('message', onMessage);
@@ -49,13 +46,6 @@ export default function MacroView() {
       ...status,
     });
   };
-
-  const checkIfMatchWithStopPoint = (position: number) => {
-    const stopPoint = stopPoints.find(({ position: stopPointPosition }) => stopPointPosition === position);
-    if (stopPoint) {
-      setLastMatchedStopPointPosition(position);
-    }
-  }
 
   const onChange = (number: number | number[]) => {
     const current = Array.isArray(number) ? number[0] : number;
@@ -163,10 +153,6 @@ export default function MacroView() {
     });
   }, [])
 
-  useEffect(() => {
-    checkIfMatchWithStopPoint(status.current);
-  }, [status.current])
-
   const marks = useMemo(() => {
     return stopPoints.reduce((acc, curr) => {
       const defaultMark = {
@@ -196,9 +182,6 @@ export default function MacroView() {
             />
           </div>
         </div>
-      </div>
-      <div className="mt-2">
-        <StopList items={stopPoints} currentPoint={lastMatchedStopPointPosition} />
       </div>
     </div>
   );

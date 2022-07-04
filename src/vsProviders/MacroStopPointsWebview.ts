@@ -29,12 +29,12 @@ export class MacroStopPointsWebview implements vscode.WebviewViewProvider {
     private readonly _extensionUri: vscode.Uri,
     private readonly _eventEmitter: EventEmitter
   ) {
-    // this._eventEmitter.on('stop-points-updated', (data) => {
-    //     this._view?.webview.postMessage({
-    //       type: 'updateStopPointList',
-    //       value: formatStopPointList(data.stopPoints),
-    //     });
-    // });
+    this._eventEmitter.on('status-changed', (status) => {
+        this._view?.webview.postMessage({
+          type: 'update-status',
+          value: status,
+        });
+    });
   }
 
   public async updateStopPointList(stopPoints: Array<any>) {
