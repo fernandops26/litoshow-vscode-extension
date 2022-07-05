@@ -99,16 +99,6 @@ function rehydrateChangeEvent(
   };
 }
 
-function rehydrateDocument(document: vscode.TextDocument): SerializedDocument {
-  return {
-    uri: document.uri.path,
-    languageId: document.languageId,
-    version: document.version,
-    fileName: document.fileName,
-    scheme: document.uri.scheme,
-  };
-}
-
 export function rehydrateBuffer(serialized: SerializedBuffer): buffers.Buffer {
   if (isStopPoint(serialized)) {
     return {

@@ -49,6 +49,15 @@ export default function MacroItemMenu({ id }) {
     });
   };
 
+  const onClickViewPlayer = () => {
+    tsvscode.postMessage({
+      type: 'openPlayerView',
+      data: {
+        macroId: id,
+      },
+    });
+  };
+
   return (
     <Menu
       transition={true}
@@ -56,7 +65,7 @@ export default function MacroItemMenu({ id }) {
         <DotsHorizontalIcon className='ml-auto w-4 h-4 invisible group-hover:visible cursor-pointer' />
       }
     >
-      <MenuItem>View</MenuItem>
+      <MenuItem onClick={onClickViewPlayer}>View Player</MenuItem>
       <MenuItem onClick={onClickRemove}>Remove</MenuItem>
     </Menu>
   );
