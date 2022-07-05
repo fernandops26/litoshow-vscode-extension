@@ -109,10 +109,6 @@ export function activate(context: vscode.ExtensionContext) {
     player.start();
   });
 
-  let restart = vscode.commands.registerCommand('litoshow.restartMacro', () => {
-    player.restart();
-  });
-
   let movePosition = vscode.commands.registerCommand(
     'litoshow.moveMacroPosition',
     (data) => {
@@ -135,7 +131,6 @@ export function activate(context: vscode.ExtensionContext) {
     record,
     newPlay,
     select,
-    restart,
     movePosition,
     pause,
     resume

@@ -101,11 +101,6 @@
         "title": "Play Macro"
       },
       {
-        "command": "litoshow.restartMacro",
-        "category": "Litoshow",
-        "title": "Restart Macro"
-      },
-      {
         "command": "litoshow.pauseMacro",
         "category": "Litoshow",
         "title": "Pause Macro"

@@ -181,10 +181,6 @@ export class MacroWebview {
             });
             break;
           }
-          case 'restart': {
-            vscode.commands.executeCommand('litoshow.restartMacro');
-            break;
-          }
           case 'pause': {
             vscode.commands.executeCommand('litoshow.pauseMacro');
             break;

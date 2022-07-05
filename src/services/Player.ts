@@ -134,11 +134,6 @@ export default class Player {
     });
   }
 
-  public restart() {
-    this._currentBuffer = buffers.get(0);
-    this.start();
-  }
-
   public async pause() {
     this.updateStatus(PAUSED);
     await vscode.window.showInformationMessage('🧘 Macro paused');
@@ -194,11 +189,12 @@ export default class Player {
 
     this._currentWorkspaceFolder = workspacePicked;
 
+    this._currentBuffer = buffers.get(0);
+
     this.updateStatus(PLAYING);
-    if (this._currentBuffer?.position === 0) {
-      if (buffers.isStartingPoint(this._currentBuffer)) {
-        await this.setStartingPoint(this._currentBuffer);
-      }
+
+    if (buffers.isStartingPoint(this._currentBuffer)) {
+      await this.setStartingPoint(this._currentBuffer);
     }
 
     this.autoPlay();

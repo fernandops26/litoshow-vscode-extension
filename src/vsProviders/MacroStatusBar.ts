@@ -61,7 +61,7 @@ export default class MacroStatusBar {
 
         if (status == STOPPED) {
             this._playerBarItem.text = '$(debug-restart)';
-            this._playerBarItem.command = 'litoshow.restartMacro';
+            this._playerBarItem.command = 'litoshow.playMacro';
             this._playerBarItem.tooltip = 'Restart macro';
             this._playerBarItem.show()
         }

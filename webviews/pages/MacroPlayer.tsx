@@ -60,13 +60,6 @@ export default function MacroView() {
     });
   };
 
-  const onClickRestart = () => {
-    tsvscode.postMessage({
-      type: 'restart',
-      value: null,
-    });
-  };
-
   const onClickPause = () => {
     tsvscode.postMessage({
       type: 'pause',
@@ -80,7 +73,6 @@ export default function MacroView() {
       value: null,
     });
   };
-
 
   const onClickResume = () => {
     tsvscode.postMessage({
@@ -135,7 +127,7 @@ export default function MacroView() {
         <div className='play text-center '>
           <div
             className='p-1 shadow rounded-full m-auto cursor-pointer'
-            onClick={onClickRestart}
+            onClick={onClickPlay}
           >
             <RefreshIcon className='w-6 h-6' />
           </div>
