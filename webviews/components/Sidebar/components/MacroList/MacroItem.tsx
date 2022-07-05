@@ -16,7 +16,7 @@ export default function MacroItem({ item }) {
         {item.name}
       </span>
 
-      <MacroItemMenu id={item.id || item.name} />
+      <MacroItemMenu id={item.id} />
       {/*<DotsHorizontalIcon className='ml-auto w-4 h-4 invisible group-hover:visible cursor-pointer' />*/}
     </div>
   );

@@ -175,6 +175,13 @@ export default class Player {
     this.autoPlay();
   }
 
+  public async clear() {
+    this._currentBuffer = undefined;
+    this._currentMacro = undefined;
+    this._currentWorkspaceFolder = undefined;
+    buffers.clear();
+  }
+
   public async start() {
     const workspacePicked = await vscode.window.showQuickPick(
       (vscode.workspace.workspaceFolders || []).map((item) => item.uri.fsPath)

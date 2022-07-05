@@ -71,6 +71,11 @@ export default class MacroStatusBar {
         this._macroSelectorStatusBar.tooltip = `Macro selected: ${name}. Click to change`;
     }
 
+    public restore() {
+        this._macroSelectorStatusBar.tooltip = 'Click to choose a macro';
+        this._playerBarItem.hide()
+    }
+
     /*dispose() {
         if (this._disposable) {
           this._disposable.dispose();

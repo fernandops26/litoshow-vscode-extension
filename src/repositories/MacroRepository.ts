@@ -99,10 +99,14 @@ export default class MacroRepository {
     });
   }
 
-  public remove(name: string): void {
+  public remove(id: string): void {
     const list = this.list();
 
-    const index = list.findIndex((item) => item.name === name);
+    const index = list.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      return;
+    }
 
     list.splice(index, 1);
 

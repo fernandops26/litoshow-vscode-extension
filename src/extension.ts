@@ -77,12 +77,16 @@ export function activate(context: vscode.ExtensionContext) {
   let remove = vscode.commands.registerCommand(
     'litoshow.removeMacro',
     async (data) => {
-      //player.select(data.id);
-      // @todo dispose player if macro is selected
       await macroRepository.remove(data.id);
+
+      if (player.getMacroId() === data.id) {
+        player.clear()
+        MacroWebview.kill();
+        statusBar.restore();
+        stopPointWebview.updateStopPointList(player.stopPoints())
+      }
+
       await vscode.commands.executeCommand('litoshow.updateClientList');
-      // remove macro view if selected has been removed -> MacroWebview.kill()
-      // deselect if selected has been removed
     }
   );
 
