@@ -4,6 +4,7 @@ import Storage, { Macro } from '../repositories/MacroRepository';
 import PQueue from 'p-queue';
 import { EventEmitter } from 'stream';
 import { getEditor } from '../utils/editorResolver';
+import { getConfig } from '../utils/configuration';
 
 const stopPointBreakChar = `\n`; // ENTER
 const replayConcurrency = 1;
@@ -54,6 +55,7 @@ export default class Player {
   private _eventEmitter: EventEmitter;
   private _currentWorkspaceFolder: string | undefined;
   private _currentMacro: Macro | undefined;
+  private _actionsPerSecond: number = 50;
 
   public static register(
     context: vscode.ExtensionContext,
@@ -179,8 +181,13 @@ export default class Player {
     if (!this._currentBuffer) {
       vscode.window.showWarningMessage('No active macro to resume.')
     }
+    await this.updateActionsPerSecond()
     this.updateStatus(PLAYING);
     this.autoPlay();
+  }
+
+  private async updateActionsPerSecond() {
+    this._actionsPerSecond = Number.parseInt(await getConfig('litoshow.actionsPerSecond'));
   }
 
   public async clear() {
@@ -204,6 +211,7 @@ export default class Player {
 
     this._currentBuffer = buffers.get(0);
 
+    await this.updateActionsPerSecond()
     this.updateStatus(PLAYING);
 
     if (buffers.isStartingPoint(this._currentBuffer)) {
@@ -227,7 +235,7 @@ export default class Player {
       setTimeout(async () => {
         await self.processBuffer();
         me();
-      }, 50);
+      }, 1000 / self._actionsPerSecond);
     })();
   }
 

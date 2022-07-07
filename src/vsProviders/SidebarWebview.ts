@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { EventEmitter } from 'stream';
 import { getNonce } from './../getNonce';
+import { getConfig, setConfig } from '../utils/configuration';
 
 export class SidebarWebview implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -16,6 +17,14 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
         value: data,
       });
     });
+
+    // @todo register as disposable
+    vscode.workspace.onDidChangeConfiguration(async e => {
+      if (e.affectsConfiguration('litoshow.actionsPerSecond')) {
+        const actionsPerSecond = await getConfig('litoshow.actionsPerSecond')
+        this.sendMessage('config', { actionsPerSecond })
+      }
+    })
   }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -35,6 +44,16 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
+        case 'getConfiguration': {
+          const actionsPerSecond = await getConfig('litoshow.actionsPerSecond')
+
+          this.sendMessage('config', { actionsPerSecond })
+          break;
+        }
+        case 'setConfiguration': {
+          await setConfig('litoshow.actionsPerSecond', data.value);
+          break;
+        }
         case 'requestMacroList': {
           vscode.commands.executeCommand('litoshow.updateClientList');
           break;
@@ -66,6 +85,13 @@ export class SidebarWebview implements vscode.WebviewViewProvider {
           break;
         }
       }
+    });
+  }
+
+  private sendMessage(type: string, value: any) {
+    this._view?.webview.postMessage({
+      type,
+      value,
     });
   }
 

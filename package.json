@@ -23,11 +23,24 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Litoshow",
+      "properties": {
+        "litoshow.actionsPerSecond": {
+          "type": "number",
+          "default": 50,
+          "description": "Specifies how many sequences of actions will be played per second (max 1000)",
+          "maxLength": "4",
+          "minimum": "1",
+          "maximum": 1000
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
           "id": "litoshow-sidebar-view",
-          "title": "Lito Show",
+          "title": "Litoshow",
           "icon": "media/litoshow-white.svg"
         }
       ],
@@ -38,7 +51,7 @@
         {
           "type": "webview",
           "id": "litoshow-sidebar",
-          "name": "Macro List",
+          "name": "Macros",
           "icon": "media/replay.svg",
           "contextualTitle": "Litoshow"
         },
