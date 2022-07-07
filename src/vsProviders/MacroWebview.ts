@@ -2,7 +2,7 @@ import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { getNonce } from '../getNonce';
 import { Macro } from '../repositories/MacroRepository';
-import { getStopList } from '../utils/getStopPointsList';
+import { getStopList, formatStopPointList } from '../utils/getStopPointsList';
 
 interface EventListenerRegistered {
   event: string;
@@ -111,17 +111,8 @@ export class MacroWebview {
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    const eventName = 'status-changed';
-    const func = (status: any) => {
-      this._panel?.webview.postMessage({
-        type: 'update-status',
-        value: status,
-      });
-    };
-
-    this._listeners.push({ event: eventName, func });
-
-    this._eventEmitter.on(eventName, func);
+    this._eventEmitter.on('status-changed', this.onUpdateStatus);
+    this._eventEmitter.on('macro-player-context-info', this.onMacroPlaterContextInfo);
 
     // // Handle messages from the webview
     // this._panel.webview.onDidReceiveMessage(
@@ -137,6 +128,25 @@ export class MacroWebview {
     // );
   }
 
+  private onUpdateStatus = (status: any) => {
+    this._panel?.webview.postMessage({
+      type: 'update-status',
+      value: status,
+    });
+  }
+
+  private onMacroPlaterContextInfo = (data: any) => {
+    this._panel?.webview.postMessage({
+      type: 'macro-player-context',
+      value: {
+        total: data.total,
+        current: data.current,
+        stops: formatStopPointList(data.stopPoints),
+        status: data.status,
+      },
+    });
+  }
+
   public dispose() {
     MacroWebview.currentPanel = undefined;
 
@@ -147,12 +157,8 @@ export class MacroWebview {
       }
     }
 
-    while (this._listeners.length) {
-      const x = this._listeners.pop();
-      if (x) {
-        this._eventEmitter.removeListener(x.event, x.func);
-      }
-    }
+    this._eventEmitter.removeListener('status-changed', this.onUpdateStatus);
+    this._eventEmitter.removeListener('macro-player-context-info', this.onMacroPlaterContextInfo);
 
     // Clean up our resources
     this._panel.dispose();
@@ -166,13 +172,7 @@ export class MacroWebview {
       async (data) => {
         switch (data.type) {
           case 'getInitialInfo': {
-            this._panel?.webview.postMessage({
-              type: 'initial-info',
-              value: {
-                total: (this._activeMacro?.buffers.length ?? 1) - 1,
-                stops: getStopList(this._activeMacro),
-              },
-            });
+            this._eventEmitter.emit('request-macro-player-context');
             break;
           }
           case 'move-position': {
@@ -213,9 +213,9 @@ export class MacroWebview {
           //   break;
           // }
         }
-      }
-      // null,
-      // this._disposables
+      },
+      null,
+      this._disposables
     );
   }
 

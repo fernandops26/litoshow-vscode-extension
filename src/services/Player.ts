@@ -69,6 +69,8 @@ export default class Player {
   constructor(storage: Storage, eventEmitter: EventEmitter) {
     this._storage = storage;
     this._eventEmitter = eventEmitter;
+
+    this._eventEmitter.on('request-macro-player-context', this.sendMacroContextInfo)
   }
 
   public select(id: string) {
@@ -142,6 +144,17 @@ export default class Player {
   private updateStatus(status: string) {
     this._status = status;
     this.notifyStatusChanged();
+  }
+
+  private sendMacroContextInfo = () => {
+    const currentPosition = this._currentBuffer?.position ?? 0;
+
+    this._eventEmitter.emit('macro-player-context-info', {
+      status: this._status,
+      total: buffers.count() - 1,
+      current: (currentPosition > 0 ? currentPosition - 1  : 0),
+      stopPoints: this.stopPoints()
+    });
   }
 
   private notifyStatusChanged() {

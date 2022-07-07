@@ -28,17 +28,18 @@ export default function MacroView() {
       onStatusChange(data.value);
     }
 
-    if (data.type == 'initial-info') {
-      onInitialInfo(data.value.total, data.value.stops);
+    if (data.type == 'macro-player-context') {
+      onInitialContext(data.value);
     }
   };
 
-  const onInitialInfo = (total: number, stopPoints: Array<{name: string, position: number}>) => {
+  const onInitialContext = ({total, current, status, stops}: { total:number, current: number, status: string, stops: Array<{name: string, position: number}>} ) => {
     setStatus({
-      ...status,
+      current,
       total,
-    })
-    setStopPoints(stopPoints);
+      status
+    });
+    setStopPoints(stops);
   }
 
   const onStatusChange = (status: any) => {
