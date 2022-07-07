@@ -8,15 +8,15 @@ import {
 import { DotsHorizontalIcon } from '@heroicons/react/outline';
 
 const menuClassName = ({ state }) =>
-  `box-border absolute z-50 text-sm bg-black p-1.5 border border-black rounded shadow-lg select-none focus:outline-none min-w-[9rem] ${
+  `absolute z-50 text-sm vscode-panel-border vscode-menu-background p-1.5 rounded shadow-lg select-none focus:outline-none min-w-[9rem] ${
     state === 'closed' && 'hidden'
   } ${state === 'opening' && 'animate-fadeIn'} ${
     state === 'closing' && 'animate-fadeOut'
   }`;
 
 const menuItemClassName = ({ hover, disabled, submenu }) =>
-  `rounded px-3 py-1 focus:outline-none ${
-    hover && 'text-white bg-blue-700 border-none outline-none'
+  `px-3 py-1 text-white hover:vscode-list-active-selection focus:outline-none cursor-pointer ${
+    hover && 'bg-gray-900 border-none outline-none'
   } ${disabled && 'text-gray-400'} ${
     submenu && "relative after:content-['❯'] after:absolute after:right-2.5"
   }`;

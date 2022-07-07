@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
     const macro = player.getSelectedMacro()
     if (macro) {
       MacroWebview.kill();
-      MacroWebview.createOrShow(context.extensionUri, eventEmitter, macro);
+      MacroWebview.createOrShow(context.extensionUri, eventEmitter, macro.name);
     }
   })
 

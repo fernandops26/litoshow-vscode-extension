@@ -1,8 +1,7 @@
 import { EventEmitter } from 'stream';
 import * as vscode from 'vscode';
 import { getNonce } from '../getNonce';
-import { Macro } from '../repositories/MacroRepository';
-import { getStopList, formatStopPointList } from '../utils/getStopPointsList';
+import { formatStopPointList } from '../utils/getStopPointsList';
 
 interface EventListenerRegistered {
   event: string;
@@ -22,25 +21,22 @@ export class MacroWebview {
   private readonly _extensionUri: vscode.Uri;
   private _eventEmitter: EventEmitter;
   private _disposables: vscode.Disposable[] = [];
-  private _listeners: EventListenerRegistered[] = [];
-  private _activeMacro: Macro | undefined;
 
   public static createOrShow(
     extensionUri: vscode.Uri,
     eventEmitter: EventEmitter,
-    macro: Macro
+    macroName: string,
   ) {
     const column = undefined; /*vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;*/
 
-    const macroTitle = 'Macro: ' + macro.name;
+    const macroTitle = 'Macro: ' + macroName;
 
     // If we already have a panel, show it.
     if (MacroWebview.currentPanel) {
       MacroWebview.currentPanel._panel.title = macroTitle;
       MacroWebview.currentPanel._panel.reveal(column);
-      MacroWebview.currentPanel._activeMacro = macro;
       MacroWebview.currentPanel._update();
 
       return;
@@ -66,8 +62,7 @@ export class MacroWebview {
     MacroWebview.currentPanel = new MacroWebview(
       panel,
       extensionUri,
-      eventEmitter,
-      macro
+      eventEmitter
     );
   }
 
@@ -80,23 +75,19 @@ export class MacroWebview {
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
     eventEmitter: EventEmitter,
-    macro: Macro
   ) {
     MacroWebview.currentPanel = new MacroWebview(
       panel,
       extensionUri,
-      eventEmitter,
-      macro
+      eventEmitter
     );
   }
 
   private constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    eventEmitter: EventEmitter,
-    macro: Macro
+    eventEmitter: EventEmitter
   ) {
-    this._activeMacro = macro;
     this._panel = panel;
     this._extensionUri = extensionUri;
     this._eventEmitter = eventEmitter;
@@ -113,19 +104,6 @@ export class MacroWebview {
 
     this._eventEmitter.on('status-changed', this.onUpdateStatus);
     this._eventEmitter.on('macro-player-context-info', this.onMacroPlaterContextInfo);
-
-    // // Handle messages from the webview
-    // this._panel.webview.onDidReceiveMessage(
-    //   (message) => {
-    //     switch (message.command) {
-    //       case "alert":
-    //         vscode.window.showErrorMessage(message.text);
-    //         return;
-    //     }
-    //   },
-    //   null,
-    //   this._disposables
-    // );
   }
 
   private onUpdateStatus = (status: any) => {
@@ -234,6 +212,18 @@ export class MacroWebview {
     const stylesMainUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'out', 'styles.css')
     );
+
+    const toolkitUri = vscode.Uri.joinPath(
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        'node_modules',
+        '@vscode',
+        'webview-ui-toolkit',
+        'dist',
+        'toolkit.min.js', // A toolkit.min.js file is also available
+      )
+    );
+
     // const cssUri = webview.asWebviewUri(
     //   vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.css')
     // );
@@ -253,6 +243,7 @@ export class MacroWebview {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${stylesResetUri}" rel="stylesheet">
           <link href="${stylesMainUri}" rel="stylesheet">
+          <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
           <script nonce="${nonce}">
             const tsvscode = acquireVsCodeApi();
           </script>

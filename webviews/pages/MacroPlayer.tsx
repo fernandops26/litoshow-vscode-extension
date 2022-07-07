@@ -91,7 +91,7 @@ export default function MacroView() {
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPlay}
           >
-            <PlayIcon className='w-6 h-6' />
+            <PlayIcon className='w-6 h-6 vscode-icon-foreground' />
           </div>
         </div>
       );
@@ -104,7 +104,7 @@ export default function MacroView() {
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPause}
           >
-            <PauseIcon className='w-6 h-6' />
+            <PauseIcon className='w-6 h-6 vscode-icon-foreground' />
           </div>
         </div>
       );
@@ -117,7 +117,7 @@ export default function MacroView() {
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickResume}
           >
-            <PlayIcon className='w-6 h-6' />
+            <PlayIcon className='w-6 h-6 vscode-icon-foreground' />
           </div>
         </div>
       );
@@ -130,7 +130,7 @@ export default function MacroView() {
             className='p-1 shadow rounded-full m-auto cursor-pointer'
             onClick={onClickPlay}
           >
-            <RefreshIcon className='w-6 h-6' />
+            <RefreshIcon className='w-6 h-6 vscode-icon-foreground' />
           </div>
         </div>
       );
@@ -161,7 +161,7 @@ export default function MacroView() {
 
   return (
     <div className='p-4'>
-      <div className=' bg-white rounded shadow text-gray-700'>
+      <div className='vscode-badge-background rounded shadow text-gray-700'>
         <div className='flex items-center p-2'>
           {renderMainButton()}
           <div className=' px-4 w-full'>

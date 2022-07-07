@@ -11,7 +11,7 @@ export default function MacroItem({ item }) {
   };
 
   return (
-    <div className='p-1 px-4 hover:bg-vscode-background flex items-center group'>
+    <div className='py-1 px-2 hover:bg-vscode-background flex items-center group'>
       <span className='cursor-pointer' onClick={onSelect}>
         {item.name}
       </span>

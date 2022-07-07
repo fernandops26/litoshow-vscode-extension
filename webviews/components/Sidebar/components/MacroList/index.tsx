@@ -19,7 +19,7 @@ export default function MacroList() {
   };
 
   return (
-    <div>
+    <div className='w-full'>
       {list.map((item) => (
         <MacroItem key={item.id} item={item} />
       ))}
