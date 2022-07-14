@@ -213,17 +213,6 @@ export class MacroWebview {
       vscode.Uri.joinPath(this._extensionUri, 'out', 'styles.css')
     );
 
-    const toolkitUri = vscode.Uri.joinPath(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        'node_modules',
-        '@vscode',
-        'webview-ui-toolkit',
-        'dist',
-        'toolkit.min.js', // A toolkit.min.js file is also available
-      )
-    );
-
     // const cssUri = webview.asWebviewUri(
     //   vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.css')
     // );
@@ -243,7 +232,6 @@ export class MacroWebview {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${stylesResetUri}" rel="stylesheet">
           <link href="${stylesMainUri}" rel="stylesheet">
-          <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
           <script nonce="${nonce}">
             const tsvscode = acquireVsCodeApi();
           </script>

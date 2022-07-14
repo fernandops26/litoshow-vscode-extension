@@ -50,7 +50,7 @@ replayQueue.on('idle', () => {
 export default class Player {
   private static _instance: Player;
   private _storage: Storage;
-  private _status: string = PAUSED;
+  private _status: string = NO_INITIATED;
   private _currentBuffer: buffers.Buffer | undefined;
   private _eventEmitter: EventEmitter;
   private _currentWorkspaceFolder: string | undefined;
@@ -83,6 +83,10 @@ export default class Player {
       this._currentBuffer = buffers.get(0);
       this.updateStatus(NO_INITIATED);
       return
+    }
+
+    if (this._currentBuffer?.position === 0) {
+      return;
     }
 
     this.updateStatus(PAUSED);
@@ -139,6 +143,11 @@ export default class Player {
   }
 
   public async pause() {
+    if (!this._currentBuffer) {
+      vscode.window.showWarningMessage('No active macro to pause.')
+      return;
+    }
+
     this.updateStatus(PAUSED);
     await vscode.window.showInformationMessage('🧘 Macro paused');
   }
@@ -181,6 +190,7 @@ export default class Player {
     if (!this._currentBuffer) {
       vscode.window.showWarningMessage('No active macro to resume.')
     }
+
     await this.updateActionsPerSecond()
     this.updateStatus(PLAYING);
     this.autoPlay();
