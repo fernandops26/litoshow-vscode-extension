@@ -1,7 +1,8 @@
 {
   "name": "litoshow",
-  "displayName": "litoshow",
-  "description": "",
+  "displayName": "LitoShow",
+  "publisher": "Fernando Palacios",
+  "description": "Record coding tutorials using macros",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.67.0"
@@ -9,17 +10,12 @@
   "categories": [
     "Other"
   ],
+  "galleryBanner": {
+    "color": "#DA2867",
+    "theme": "dark"
+  },
   "activationEvents": [
-    "onCommand:newlitoshow.testStatus",
-    "onCommand:litoshow.createMacro",
-    "onCommand:litoshow.saveMacro",
-    "onCommand:newlitoshow.refreshMacro",
-    "onCommand:litoshow.playMacro",
-    "onCommand:litoshow.selectMacro",
-    "onCommand:litoshow.removeMacro",
-    "onCommand:litoshow.insertStop",
-    "onCommand:newlitoshow.viewPlayer",
-    "onView:litoshow-sidebar"
+    "*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -64,21 +60,10 @@
       ]
     },
     "menus": {
-      "view/title": [
-        {
-          "command": "newlitoshow.refreshAll",
-          "when": "view == litoshow-sidebar",
-          "group": "navigation"
-        }
-      ],
+      "view/title": [],
       "view/item/context": []
     },
     "commands": [
-      {
-        "command": "newlitoshow.refreshWebviews",
-        "category": "Litoshow",
-        "title": "Refresh Webviews"
-      },
       {
         "command": "litoshow.createMacro",
         "category": "Litoshow",
@@ -88,18 +73,6 @@
         "command": "litoshow.saveMacro",
         "category": "Litoshow",
         "title": "Save Macro"
-      },
-      {
-        "command": "litoshow.removeMacro",
-        "category": "Litoshow",
-        "title": "Remove Macro",
-        "icon": "media/trash.svg"
-      },
-      {
-        "command": "newlitoshow.refreshMacro",
-        "category": "Litoshow",
-        "title": "Refresh",
-        "icon": "media/refresh.svg"
       },
       {
         "command": "litoshow.selectMacro",
@@ -118,19 +91,9 @@
         "title": "Pause Macro"
       },
       {
-        "command": "newlitoshow.refreshAll",
-        "category": "Litoshow",
-        "title": "Refresh"
-      },
-      {
         "command": "newlitoshow.viewPlayer",
         "category": "Litoshow",
         "title": "View Player"
-      },
-      {
-        "command": "litoshow.updateClientList",
-        "category": "Litoshow",
-        "title": "Update Client List"
       },
       {
         "command": "litoshow.insertStop",
