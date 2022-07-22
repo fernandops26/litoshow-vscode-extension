@@ -34,13 +34,8 @@ export default class Recorder {
   private _activeMacro: Macro | undefined = undefined;
 
   public static register(context: vscode.ExtensionContext) {
-    return () => {
-      // reset global buffer
-
-      //vscode.window.showInformationMessage('Hacker Typer is now recording!');
-      const recorder = new Recorder(Storage.getInstance(context));
-      context.subscriptions.push(recorder);
-    };
+    const recorder = new Recorder(Storage.getInstance(context));
+    context.subscriptions.push(recorder);
   }
 
   constructor(storage: Storage) {
@@ -60,6 +55,12 @@ export default class Recorder {
       subscriptions
     );
 
+    const createMacro = vscode.commands.registerCommand(
+      'litoshow.createMacro',
+      this.createMacro,
+      this
+    );
+
     const insertNamedStop = vscode.commands.registerCommand(
       'litoshow.insertStop',
       this.insertNamedStop,
@@ -68,16 +69,15 @@ export default class Recorder {
 
     const save = vscode.commands.registerCommand(
       'litoshow.saveMacro',
-      async () => this.saveRecording(save)
+      async () => this.saveRecording()
     );
 
     this._disposable = vscode.Disposable.from(
       ...subscriptions,
+      createMacro,
       insertNamedStop,
       save
     );
-
-    this.createMacro();
   }
 
   private async createMacro() {
@@ -93,7 +93,6 @@ export default class Recorder {
 
     if (!macroName) {
       vscode.window.showInformationMessage('You should specify a name.');
-      this.dispose();
       return;
     }
 
@@ -168,7 +167,7 @@ export default class Recorder {
     });
   }
 
-  private async saveRecording(command: vscode.Disposable) {
+  private async saveRecording() {
     if (!this._activeMacro) {
       vscode.window.showWarningMessage('No active macro to save.');
       return;
@@ -185,9 +184,6 @@ export default class Recorder {
 
     this._activeMacro = undefined;
     vscode.commands.executeCommand('litoshow.updateClientList');
-
-    command.dispose();
-    this.dispose();
   }
 
   private onDidChangeTextDocument(e: vscode.TextDocumentChangeEvent) {

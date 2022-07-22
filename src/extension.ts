@@ -15,10 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
   const eventEmitter = new EventEmitter();
   const macroRepository = Storage.getInstance(context);
 
-  let record = vscode.commands.registerCommand(
-    'litoshow.createMacro',
-    Recorder.register(context)
-  );
+  Recorder.register(context)
 
   Trigger.register(context, eventEmitter);
 
@@ -128,7 +125,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     openView,
     remove,
-    record,
     newPlay,
     select,
     movePosition,
