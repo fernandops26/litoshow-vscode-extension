@@ -93,6 +93,7 @@ export default class Recorder {
 
     if (!macroName) {
       vscode.window.showInformationMessage('You should specify a name.');
+      this.dispose();
       return;
     }
 
