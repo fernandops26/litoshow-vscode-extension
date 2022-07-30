@@ -82,10 +82,6 @@ The extension uses the following settings:
 | --------------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------ | --- |
 | `litoshow.actionsPerSecond` | number   | 50          | Specifies how many sequences of actions will be played per second. Minimun 1 maximun 1000. |     |
 
-## Telemetry
-
-Litoshow collects usage data to improve our products and services.
-
 ## **Feedback, Support, and Community**
 
 If you love Litoshow, have an issue, or want to request a feature, let us now directly on our <a href='https://discord.gg/f3FWAB5spU' target="_blank">Discord server</a>. Also you have it available clicking on the tab “Support & Help”.
