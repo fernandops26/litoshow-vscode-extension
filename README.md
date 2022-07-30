@@ -1,75 +1,95 @@
-# Litoshow
+<p align="center">
+  <img alt="Litoshow Logo" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/litoshow-logo-128x128.png?raw=true">
+</p>
 
-Add [litoshow](https://litoshow.app) to VS Code to create a full coding tutorial using macros. Support writing recording for multiple files. Main use case: Partner for teaching/learning coding tutorials.
+# Litoshow for Visual Studio Code
+
+Litoshow helps you to improve your coding content creation by recording your code previously. Perfect for your coding tutorials
+
+_Currently in beta version, no login needed._
+
+## Why use litoshow for VS Code?
+
+Three simple reasons:
+
+<b>Save recording time preparing the code previously.</b> As a content creator, you don't want to leave anything loose, so prepare important things: documentation, texts, examples... so why not your code?
+
+<b>Focus on the explanation while the macro coding for you.</b> Don't focus on the problems when writing code anymore, just play the macro and focus on the explanation that's what really matters.
+
+<b>Open a new way to teach and learn code.</b> Open your mind to all possibilities working this way. All your programming tutorials are in your control. Learning/teaching code has never been easy.
 
 ## Key Features
-----
-- **Record multiple files**: Record whatever files you want of your coding tutorial.
-- **Replay**: Playback your macro and everything typed code.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Support record multiple files
+- Support multiple cursors
+- Move forward/backward
+- Insert stop points
+- Unlimited macros
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+### Record a macro
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Create a macro its easy just type the command `Litoshow: Create macro` and assign a name, press enter and just start to coding on your files, once you finished type the command “Litoshow: save macro”.
 
-## Requirements
+<img alt="Record macro on Litoshow" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-record-a-macro.gif?raw=true">
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Playback macro
 
-## Extension Settings
+First select a macro from the list or just type the command `litoshow: Play macro` and choose a macro and then choose the workspace to play, remember that macros always need a workspace where playback it.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+<img alt="Playback macro on Litoshow" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-playback-macro.gif?raw=true">
 
-For example:
+Also you can click on “play” icon on the status toolbar.
 
-This extension contributes the following settings:
+<img alt="Playback macro on Litoshow from status bar" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-playback-macro-status-bar.gif?raw=true">
 
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
+### Insert Stop Points
 
-## Known Issues
+Usually stop points are used to define important topics, sections or chapters in your recording. For now, stop points can be inserted on “recording time”, to add a new one type command `litoshow: Insert Stop`.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+<img alt="Inser stop points on Litoshow" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-insert-stop-points.gif?raw=true">
 
-## Release Notes
+### View Player
 
-Users appreciate release notes as you update your extension.
+Just click on “View player” from contextual menu.
 
-### 1.0.0
+<img alt="View player on Litoshow" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-view-player.gif?raw=true">
 
-Initial release of ...
+### Move forward / backward
 
-### 1.0.1
+Use the player to move through your macro or to any point of the recording.
 
-Fixed issue #.
+<img alt="Move forward and backward on Litoshow" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-move-forward-backward-any-point.gif?raw=true">
 
-### 1.1.0
+### Using from VS Code status bar
 
-Added features X, Y, and Z.
+For easy access and quick control you can choose, play, pause and restart a macro from the status bar.
 
----
+<img alt="Using Litoshow from status bar" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-using-from-status-bar.gif?raw=true">
 
-## Following extension guidelines
+### VS Code theme support
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+Use this extension on any of your preferred theme editor.
 
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+<img alt="Theme support Litoshow" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-vscode-theme-support.gif?raw=true">
 
-## Working with Markdown
+## Settings
 
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+The extension uses the following settings:
 
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
+| **Setting**                 | **Type** | **Default** | **Description**                                                                            |     |
+| --------------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------ | --- |
+| `litoshow.actionsPerSecond` | number   | 50          | Specifies how many sequences of actions will be played per second. Minimun 1 maximun 1000. |     |
 
-### For more information
+## Telemetry
 
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+Litoshow collects usage data to improve our products and services.
 
-**Enjoy!**
+## **Feedback, Support, and Community**
 
+If you love Litoshow, have an issue, or want to request a feature, let us now directly on our <a href='https://discord.gg/f3FWAB5spU' target="_blank">Discord server</a>. Also you have it available clicking on the tab “Support & Help”.
+
+<img alt="Send feedback, support and joint to the community" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-support-and-help.png?raw=true">
+
+Also you can send us mail to <a href="mailto:support@litoshow.app">support@litoshow.app</a> and tweet us to <a href="https://twitter.com/Litoshow_app" target="_blank">@litoshow.app</a>
