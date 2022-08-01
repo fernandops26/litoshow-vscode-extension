@@ -20,7 +20,13 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "*"
+    "onStartupFinished"
+  ],
+  "keywords": [
+    "coding tutorials",
+    "playback",
+    "programming languages",
+    "javascript"
   ],
   "main": "./dist/extension.js",
   "contributes": {
