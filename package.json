@@ -1,7 +1,7 @@
 {
   "name": "litoshow",
   "displayName": "LitoShow",
-  "publisher": "Fernando Palacios",
+  "publisher": "FernandoPalacios",
   "description": "Playback your code using macros on VSCode",
   "version": "0.0.1",
   "engines": {
