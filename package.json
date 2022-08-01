@@ -16,7 +16,7 @@
   ],
   "icon": "media/litoshow-logo-128x128.png",
   "galleryBanner": {
-    "color": "#DA2867",
+    "color": "#232323",
     "theme": "dark"
   },
   "activationEvents": [
