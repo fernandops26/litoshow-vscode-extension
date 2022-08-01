@@ -3,7 +3,7 @@
   "displayName": "LitoShow",
   "publisher": "FernandoPalacios",
   "description": "Playback your code using macros on VSCode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.67.0"
   },
