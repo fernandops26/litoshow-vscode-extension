@@ -88,4 +88,9 @@ If you love Litoshow, have an issue, or want to request a feature, let us now di
 
 <img alt="Send feedback, support and joint to the community" src="https://github.com/fernandops26/litoshow-vscode/blob/main/assets/vscode-litoshow/litoshow-support-and-help.png?raw=true">
 
-Also you can send us mail to <a href="mailto:support@litoshow.app">support@litoshow.app</a> and tweet us to <a href="https://twitter.com/Litoshow_app" target="_blank">@litoshow.app</a>
+Also you can tweet us to <a href="https://twitter.com/Litoshow_app" target="_blank">@litoshow.app</a>
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
